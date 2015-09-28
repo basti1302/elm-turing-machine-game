@@ -1,8 +1,9 @@
 module Game where
 
-import Array exposing (Array)
+import Array exposing (fromList)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import List exposing (append)
 import Maybe exposing (withDefault)
 import Signal exposing (Signal, (<~), (~), foldp)
 import Time exposing (every, second)
@@ -14,7 +15,7 @@ import Machine exposing (..)
 initialMachine : Machine
 initialMachine =
   { state = initialState
-  , tape = Array.fromList [ Cell blank ]
+  , tape = fromList [ Cell blank ]
   , head = 0
   , stopped = False
   }
@@ -36,16 +37,6 @@ mainSignal : Signal (Machine)
 mainSignal = foldp tick initialMachine (every second)
 
 {-
-Convert a cell into an HTML span.
--}
-renderCell : Cell -> Html
-renderCell cell = span
-  [ class "cell"
-  , style [("background-color", (toString cell.symbol))] -- TODO convert to lower case
-  ]
-  [text ""]
-
-{-
 Renders the game view.
 -}
 main : Signal Html
@@ -53,8 +44,8 @@ main =
   (\ machine ->
     section
     [ id "game" ]
-    [ h1 [] [ text "Turing Machine Puzzler" ]
-    , h2 [] [ text <| toString machine.state ]
-    , div [] (Array.toList (Array.map renderCell machine.tape))
-    ]
+    (append
+      [ h1 [] [ text "Turing Machine Puzzler" ] ]
+      (renderMachine machine)
+    )
   ) <~ mainSignal

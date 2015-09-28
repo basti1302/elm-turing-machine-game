@@ -2,6 +2,7 @@ module Machine where
 
 import Array exposing (Array, append, fromList, get, length)
 import Debug
+import Html exposing (..)
 
 import Cell exposing (..)
 import Move exposing (..)
@@ -65,11 +66,9 @@ state, new head position).
 transform : Machine -> (Symbol, State, Move) -> Machine
 transform machine (symbolToWrite, newState, move) =
   let
-    _ = Debug.log "transf <<" (machine.tape, symbolToWrite, newState, move)
     writeAt = machine.head
     newHead = calcHeadPosition machine.head move
   in
-    Debug.log "transf >>"
     { state = newState
     , tape = write machine.tape symbolToWrite writeAt
     , head = newHead
@@ -91,3 +90,12 @@ executeStep machine =
     (symbol', state', move) = program (machine'.state, symbol)
   in
     transform machine' (symbol', state', move)
+
+{-
+Renders the machine to HTML.
+-}
+renderMachine : Machine -> List Html
+renderMachine machine =
+  [ h2 [] [ text <| toString machine.state ]
+  , renderTape machine.tape machine.head
+  ]

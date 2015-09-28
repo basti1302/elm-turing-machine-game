@@ -2,6 +2,7 @@ module Tape where
 
 import Array exposing (..)
 import Debug
+import Html exposing (..)
 
 import Cell exposing (..)
 import Move exposing (..)
@@ -12,26 +13,19 @@ type alias Tape = Array Cell
 read : Tape -> Int -> Maybe Symbol
 read tape position =
    let
-     _ = Debug.log "read <<" (tape, position)
-     maybeCell = Array.get position tape
-   in
-     Debug.log "read >>"
-       (case maybeCell of
-         Just cell -> Just cell.symbol
-         Nothing -> Nothing)
+     maybeCell = get position tape
+   in case maybeCell of
+     Just cell -> Just cell.symbol
+     Nothing -> Nothing
 
 {-
 Extends the tape, if necessary, before reading.
 -}
 extendTape : Tape -> Int -> Tape
 extendTape tape position =
-  let
-    _ = Debug.log "ext tp <<" (tape, position, length tape)
-    result =
-      if | position == -1 -> Array.append (fromList [cell blank]) tape
-         | position >= Array.length tape -> Array.push (cell blank) tape
-         | otherwise -> tape
-  in Debug.log "ext tp >>" result
+  if | position == -1 -> append (fromList [cell blank]) tape
+     | position >= length tape -> push (cell blank) tape
+     | otherwise -> tape
 
 {-
 Writes a symbol to the cell at the given position, extending the tape, if
@@ -39,29 +33,42 @@ necessary.
 -}
 write : Tape -> Symbol -> Int -> Tape
 write tape symbol position =
-  let
-    _ = Debug.log "write <<" (tape, symbol, position)
-    result = Array.set position (cell symbol) tape
-  in
-    Debug.log "write >>" result
+  set position (cell symbol) tape
 
 {-
 Calculates the new position of the head.
 -}
 calcHeadPosition : Int -> Move -> Int
 calcHeadPosition position move =
-  let _ = Debug.log "calc head <<" (position, move)
-  in
-    case move of
-      Left -> Debug.log "<|HEAD" (position - 1)
-      Right -> Debug.log "HEAD|>" (position + 1)
+  case move of
+    Left -> position - 1
+    Right -> position + 1
 
 {-
 Fix the head position in case we extended the tape to the left.
 -}
 fixHeadPosition : Int -> Int
--- if pos = 0 and move = Left we also extend the tape left, thus we need to
--- correct the write position
+-- If pos = -1 we just extended the tape to left. In these cases we need to fix
+-- correct the head position.
 fixHeadPosition position =
-  let _ = Debug.log "fix head <<" position
-  in Debug.log "fix head >>" (if position == -1 then 0 else position)
+  if position == -1 then 0 else position
+
+{-
+Renders the tape to HTML.
+-}
+renderTape : Tape -> Int -> Html
+renderTape tape head =
+  let
+    show = 4
+    missingLeft = max (show - head) 0 -- cells we need to append at the left edge
+    deltaRight = length tape - head - 1 -- # of cells between head and right edge
+    missingRight = max (show - deltaRight) 0 -- cells we need to append at the right edge
+    extendedTape =
+      append
+        (append (repeat missingLeft (Cell blank)) tape) -- prepend cells left
+        (repeat missingRight (Cell blank)) -- append cells right
+    newHead = head + missingLeft -- fix head # if we prepended left
+    -- drop all cells at start/end except head and two cells left and right of head
+    slicedTape = slice (newHead - show) (newHead + show + 1) extendedTape
+  in
+    div [] (toList (map renderCell slicedTape))
