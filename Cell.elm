@@ -31,3 +31,18 @@ renderCell cell = span
     ]
   ]
   [text ""]
+
+renderHead : Cell -> Html
+renderHead cell = span
+  [ class "cell"
+  , style
+    [ ("background-color" , toLower <| toString cell.symbol)
+    , ("width", "50px")
+    , ("height", "50px")
+    , ("float", "left")
+    , ("margin-left", "5px")
+    , ("margin-right", "5px")
+    , ("border", "5px solid red")
+    ]
+  ]
+  [text ""]

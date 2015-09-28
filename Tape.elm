@@ -63,12 +63,26 @@ renderTape tape head =
     missingLeft = max (show - head) 0 -- cells we need to append at the left edge
     deltaRight = length tape - head - 1 -- # of cells between head and right edge
     missingRight = max (show - deltaRight) 0 -- cells we need to append at the right edge
+
+    -- append cells so that we always show a certain number of cells left and right of head
     extendedTape =
       append
         (append (repeat missingLeft (Cell blank)) tape) -- prepend cells left
         (repeat missingRight (Cell blank)) -- append cells right
     newHead = head + missingLeft -- fix head # if we prepended left
-    -- drop all cells at start/end except head and two cells left and right of head
-    slicedTape = slice (newHead - show) (newHead + show + 1) extendedTape
+
+    -- drop all cells at start/end except head and "show" cells left and right of head
+    leftSide = slice (newHead - show) newHead extendedTape
+    cellAtHeadMaybe = get newHead extendedTape
+    cellAtHead =
+      case cellAtHeadMaybe of
+        Just cell -> cell
+        Nothing -> Debug.crash "No cell at head"
+    rightSide = slice (newHead + 1) (newHead + show + 1) extendedTape
+
+    -- apply render function
+    leftRendered = map renderCell leftSide
+    leftAndHeadRendered = push (renderHead cellAtHead) leftRendered
+    rightRendered = map renderCell rightSide
   in
-    div [] (toList (map renderCell slicedTape))
+    div [] <| toList <| append leftAndHeadRendered rightRendered
