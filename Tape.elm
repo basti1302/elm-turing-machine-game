@@ -1,88 +1,104 @@
-module Tape where
+module Tape (Model, init, read, Action(Write, Extend), update, view) where
 
-import Array exposing (..)
+import Array
 import Debug
-import Html exposing (..)
+import Html
 
-import Cell exposing (..)
-import Move exposing (..)
-import Symbol exposing (..)
+import Cell
+import Move exposing (Move)
+import Symbol exposing (Symbol)
 
-type alias Tape = Array Cell
 
-read : Tape -> Int -> Maybe Symbol
-read tape position =
+type alias Model = Array.Array Cell.Model
+
+
+{-|
+Initializes an empty tape.
+-}
+init : Model
+init = Array.fromList []
+
+
+type Action = Write Int Cell.Action | Extend Int
+
+
+{-|
+Updates the tape by either writing to it or expanding it.
+-}
+update : Action -> Model -> Model
+update action model =
+  case action of
+    Extend position -> extend position model
+    Write position cellAction -> write position cellAction model
+
+
+{-|
+Extends the tape, if necessary, that is, if the given position is outside the
+current valid range of tape indices.
+-}
+extend : Int -> Model -> Model
+extend position model =
+  if | position == -1 -> Array.append (Array.fromList [Cell.blank]) model
+     | position >= Array.length model -> Array.push (Cell.blank) model
+     | otherwise -> model
+
+
+{-|
+Writes a symbol to the cell at the given position.
+-}
+write : Int -> Cell.Action -> Model -> Model
+write position cellAction model =
+  let
+    maybeCell = (Array.get position model)
+    cell' = case maybeCell of
+      Just cell -> (Cell.update cellAction) cell
+      Nothing -> Debug.crash "No cell to write to"
+  in
+    Array.set position cell' model
+
+
+{-|
+Reads the symbol from the tape at the given position.
+-}
+read : Int -> Model -> Maybe Symbol
+read position model =
    let
-     maybeCell = get position tape
+     maybeCell = Array.get position model
    in case maybeCell of
      Just cell -> Just cell.symbol
      Nothing -> Nothing
 
-{-
-Extends the tape, if necessary, before reading.
--}
-extendTape : Tape -> Int -> Tape
-extendTape tape position =
-  if | position == -1 -> append (fromList [cell blank]) tape
-     | position >= length tape -> push (cell blank) tape
-     | otherwise -> tape
 
-{-
-Writes a symbol to the cell at the given position, extending the tape, if
-necessary.
--}
-write : Tape -> Symbol -> Int -> Tape
-write tape symbol position =
-  set position (cell symbol) tape
-
-{-
-Calculates the new position of the head.
--}
-calcHeadPosition : Int -> Move -> Int
-calcHeadPosition position move =
-  case move of
-    Left -> position - 1
-    Right -> position + 1
-
-{-
-Fix the head position in case we extended the tape to the left.
--}
-fixHeadPosition : Int -> Int
--- If pos = -1 we just extended the tape to left. In these cases we need to fix
--- correct the head position.
-fixHeadPosition position =
-  if position == -1 then 0 else position
-
-{-
+{-|
 Renders the tape to HTML.
 -}
-renderTape : Tape -> Int -> Html
-renderTape tape head =
+view : Int -> Model -> Html.Html
+view head tape =
   let
     show = 4
     missingLeft = max (show - head) 0 -- cells we need to append at the left edge
-    deltaRight = length tape - head - 1 -- # of cells between head and right edge
+    deltaRight = Array.length tape - head - 1 -- # of cells between head and right edge
     missingRight = max (show - deltaRight) 0 -- cells we need to append at the right edge
 
     -- append cells so that we always show a certain number of cells left and right of head
     extendedTape =
-      append
-        (append (repeat missingLeft (Cell blank)) tape) -- prepend cells left
-        (repeat missingRight (Cell blank)) -- append cells right
+      Array.append
+        (Array.append (Array.repeat missingLeft Cell.blank) tape) -- prepend cells left
+        (Array.repeat missingRight Cell.blank) -- append cells right
     newHead = head + missingLeft -- fix head # if we prepended left
 
     -- drop all cells at start/end except head and "show" cells left and right of head
-    leftSide = slice (newHead - show) newHead extendedTape
-    cellAtHeadMaybe = get newHead extendedTape
+    leftSide = Array.slice (newHead - show) newHead extendedTape
+    cellAtHeadMaybe = Array.get newHead extendedTape
     cellAtHead =
       case cellAtHeadMaybe of
         Just cell -> cell
         Nothing -> Debug.crash "No cell at head"
-    rightSide = slice (newHead + 1) (newHead + show + 1) extendedTape
+    rightSide = Array.slice (newHead + 1) (newHead + show + 1) extendedTape
 
     -- apply render function
-    leftRendered = map renderCell leftSide
-    leftAndHeadRendered = push (renderHead cellAtHead) leftRendered
-    rightRendered = map renderCell rightSide
+    leftRendered = Array.map Cell.view leftSide
+    leftAndHeadRendered = Array.push (Cell.viewAsHead cellAtHead) leftRendered
+    rightRendered = Array.map Cell.view rightSide
   in
-    div [] <| toList <| append leftAndHeadRendered rightRendered
+    Html.div [] <| Array.toList <| Array.append leftAndHeadRendered rightRendered
