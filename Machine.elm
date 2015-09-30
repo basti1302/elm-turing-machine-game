@@ -7,6 +7,7 @@ import Html.Attributes
 
 import Cell exposing (..)
 import Move exposing (Move)
+import Program
 import RenderPhase exposing (RenderPhase)
 import Symbol exposing (Symbol)
 import State exposing (..)
@@ -46,22 +47,26 @@ init =
   }
 
 
-{-
-This is the actual Turing Machine program.
-We need to get this as user input later.
+program : Program.Model
+program = Program.init
 
-This one is the 3-state/2-symbol busy beaver.
+
+{-|
+Executes the Turing machine program once on the given input state and input
+symbol.
 -}
-program : (State, Symbol) -> (Symbol, State, Move)
-program (state, symbol) =
-  case (state, symbol) of
-    (A, Symbol.White) -> (Symbol.Black, B, Move.Right)
-    (A, Symbol.Black) -> (Symbol.Black, C, Move.Left)
-    (B, Symbol.White) -> (Symbol.Black, A, Move.Left)
-    (B, Symbol.Black) -> (Symbol.Black, B, Move.Right)
-    (C, Symbol.White) -> (Symbol.Black, B, Move.Left)
-    (C, Symbol.Black) -> (Symbol.Black, HALT, Move.Right)
-    _ -> Debug.crash ("Incomplete Turing machine program " ++ toString (state, symbol))
+executeProgram : (State, Symbol) -> Maybe (Symbol, State, Move)
+executeProgram (state, symbol) =
+  let
+    candidates = List.filter
+      (\ (state1, symbol1, _, _, _) -> state == state1 && symbol == symbol1)
+      program
+    maybeStatement = if List.length candidates == 1
+      then List.head candidates
+      else Nothing
+  in case maybeStatement of
+    Just (_, _, symbol', state', move) -> Just (symbol', state', move)
+    Nothing -> Nothing
 
 
 {-|
@@ -70,8 +75,12 @@ on the current state of the machine) without actually performing it.
 -}
 predictNextStep : Model -> (Symbol, State, Move)
 predictNextStep machine =
-  program (machine.state, read machine)
-
+  let
+    maybeInstruction = executeProgram (machine.state, read machine)
+  in
+    case maybeInstruction of
+      Just (sy, st, mv) -> (sy, st, mv)
+      Nothing -> (Symbol.White, HALT, Move.Right)
 
 {-
 Reads the symbol at the current position of the head
@@ -108,9 +117,13 @@ executeStep machine =
     head' = fixHeadPosition machine.head
     machine' = { machine | tape <- extendedTape, head <- head' }
     symbol = read machine'
-    (symbol', state', move) = program (machine'.state, symbol)
+    maybeInstruction = executeProgram (machine'.state, symbol)
   in
-    transform (symbol', state', move) machine'
+    case maybeInstruction of
+      Just (symbol', state', move) -> transform (symbol', state', move) machine'
+      Nothing ->
+        let _ = Debug.log "Incomplete Turing machine program for" (machine'.state, symbol)
+        in Debug.log "Halting Turing machine at" (transform (Symbol.White, HALT, Move.Right) machine')
 
 
 {-
