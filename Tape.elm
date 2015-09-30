@@ -3,9 +3,11 @@ module Tape (Model, init, read, Action(Write, Extend), update, view) where
 import Array
 import Debug
 import Html
+import Html.Attributes
 
 import Cell
 import Move exposing (Move)
+import RenderPhase exposing (RenderPhase)
 import Symbol exposing (Symbol)
 
 
@@ -72,8 +74,8 @@ read position model =
 {-|
 Renders the tape to HTML.
 -}
-view : Int -> Model -> Html.Html
-view head tape =
+view : RenderPhase -> Int -> Model -> Html.Html
+view renderPhase head tape =
   let
     show = 4
     missingLeft = max (show - head) 0 -- cells we need to append at the left edge
@@ -91,14 +93,23 @@ view head tape =
     leftSide = Array.slice (newHead - show) newHead extendedTape
     cellAtHeadMaybe = Array.get newHead extendedTape
     cellAtHead =
-      case cellAtHeadMaybe of
-        Just cell -> cell
-        Nothing -> Debug.crash "No cell at head"
+      case renderPhase of
+        RenderPhase.WriteSymbol symbol ->
+          Cell.fromSymbol symbol
+        RenderPhase.StartTransition (symbol, state, move) ->
+          Cell.fromSymbol symbol
+        otherwise ->
+          case cellAtHeadMaybe of
+            Just cell -> cell
+            Nothing -> Debug.crash "No cell at head"
     rightSide = Array.slice (newHead + 1) (newHead + show + 1) extendedTape
 
     -- apply render function
-    leftRendered = Array.map Cell.view leftSide
-    leftAndHeadRendered = Array.push (Cell.viewAsHead cellAtHead) leftRendered
-    rightRendered = Array.map Cell.view rightSide
+    leftRendered = Array.map (Cell.view renderPhase) leftSide
+    leftAndHeadRendered = Array.push (Cell.view renderPhase cellAtHead) leftRendered
+    rightRendered = Array.map (Cell.view renderPhase) rightSide
   in
-    Html.div [] <| Array.toList <| Array.append leftAndHeadRendered rightRendered
+    Html.div
+      [Html.Attributes.class "tape"]
+        <| Array.toList
+        <| Array.append leftAndHeadRendered rightRendered

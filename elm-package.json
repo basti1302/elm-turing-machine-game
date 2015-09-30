@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "A puzzle game inspired by the concept of Turing machines, written in Elm",
-    "repository": "https://github.com/basti1302/elm-turing-machine-puzzler.git",
+    "repository": "https://github.com/basti1302/elm-turing-machine-game.git",
     "license": "UNLICENSED",
     "source-directories": [
         "."

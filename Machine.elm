@@ -1,12 +1,15 @@
-module Machine (Model, init, Action(ExecuteStep), update, view) where
+module Machine (Model, init, predictNextStep, Action(ExecuteStep), update, view) where
 
 import Array
 import Debug
 import Html
+import Html.Attributes
 
 import Cell exposing (..)
 import Move exposing (Move)
+import RenderPhase exposing (RenderPhase)
 import Symbol exposing (Symbol)
+import State exposing (..)
 import Tape
 
 
@@ -16,9 +19,6 @@ inputSymbols = [ Symbol.Black ]
 
 symbols : List Symbol
 symbols = List.append inputSymbols [ Symbol.blank ]
-
-
-type State = A | B | C | HALT
 
 
 initialState : State
@@ -46,7 +46,6 @@ init =
   }
 
 
-
 {-
 This is the actual Turing Machine program.
 We need to get this as user input later.
@@ -65,6 +64,15 @@ program (state, symbol) =
     _ -> Debug.crash ("Incomplete Turing machine program " ++ toString (state, symbol))
 
 
+{-|
+Predicts the next step (the outcome of executing the Turing machine program once
+on the current state of the machine) without actually performing it.
+-}
+predictNextStep : Model -> (Symbol, State, Move)
+predictNextStep machine =
+  program (machine.state, read machine)
+
+
 {-
 Reads the symbol at the current position of the head
 -}
@@ -73,7 +81,7 @@ read machine =
   let maybeSymbol = Tape.read machine.head machine.tape
   in case maybeSymbol of
     Just symbol -> symbol
-    Nothing -> Debug.crash "Could not read from tape"
+    Nothing -> Symbol.blank
 
 
 type Action = ExecuteStep
@@ -147,8 +155,17 @@ fixHeadPosition position =
 {-
 Renders the machine to HTML.
 -}
-view : Model -> List Html.Html
-view machine =
-  [ Html.h2 [] [ Html.text <| toString machine.state ]
-  , Tape.view machine.head machine.tape
-  ]
+view : RenderPhase -> Model -> List Html.Html
+view renderPhase machine =
+  let state = case renderPhase of
+    RenderPhase.StartTransition (_, nextState, _) -> nextState
+    otherwise -> machine.state
+  in
+    [ Html.div [ Html.Attributes.class "cpu" ] [
+        Html.span [] [Html.text <| toString state]
+      ]
+    , Html.div [ Html.Attributes.class "head" ] []
+    , Html.div
+        [ Html.Attributes.class "tape-viewport" ]
+        [Tape.view renderPhase machine.head machine.tape]
+    ]
