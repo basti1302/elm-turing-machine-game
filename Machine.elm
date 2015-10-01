@@ -55,6 +55,7 @@ program = Program.init
 Executes the Turing machine program once on the given input state and input
 symbol.
 -}
+-- TODO Replace Maybe type be Result
 executeProgram : (State, Symbol) -> Maybe (Symbol, State, Move)
 executeProgram (state, symbol) =
   let
@@ -80,9 +81,11 @@ predictNextStep machine =
   in
     case maybeInstruction of
       Just (sy, st, mv) -> (sy, st, mv)
+      -- TODO Propagating a Result (containing an error) up in switching the
+      -- machine to "stopped" without abusing the HALT state would be cleaner.
       Nothing -> (Symbol.White, HALT, Move.Right)
 
-{-
+{-|
 Reads the symbol at the current position of the head
 -}
 read : Model -> Symbol
@@ -126,7 +129,7 @@ executeStep machine =
         in Debug.log "Halting Turing machine at" (transform (Symbol.White, HALT, Move.Right) machine')
 
 
-{-
+{-|
 Takes the current complete state of a Turing machine (tape content, internal
 state, head position), execute one step of the Turing machine program and put
 return the next complete Turing machine state (new tape content, new internal
@@ -165,7 +168,7 @@ fixHeadPosition position =
   if position == -1 then 0 else position
 
 
-{-
+{-|
 Renders the machine to HTML.
 -}
 view : RenderPhase -> Model -> List Html.Html

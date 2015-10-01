@@ -7,48 +7,41 @@ import Signal exposing (Signal, (<~), (~))
 import Time exposing (every, millisecond)
 
 import Move exposing (Move)
-import Machine
+import MachineView
 import RenderPhase exposing (RenderPhase)
+import ProgramView
 import State exposing (State)
+import View exposing (View)
+
+type alias Model = (View, MachineView.Model, ProgramView.Model)
+
+
+init : Model
+init =
+  (View.VMachine, MachineView.init, ProgramView.init)
 
 
 {-|
-Drops the float from the timed signal and executes one step of the Turing
-machine program.
+Updates the current view on each signal tick.
 -}
-tick : Float -> (Machine.Model, RenderPhase) -> (Machine.Model, RenderPhase)
-tick _ (machine, renderPhase)  =
-  case machine.stopped of
-    False ->
-      let
-        (nextSymbol, nextState, nextMove) = Machine.predictNextStep machine
-      in case renderPhase of
-
-        -- Init -> WriteSymbol (write the next symbol to head's position)
-        RenderPhase.Init -> (machine, RenderPhase.WriteSymbol nextSymbol)
-
-        -- WriteSymbol -> StartTransition (start animation of tape/head
-        -- according to move direction)
-        RenderPhase.WriteSymbol _ ->
-          (machine, RenderPhase.StartTransition
-            (nextSymbol, nextState, nextMove))
-
-        -- StartTransition -> CompleteStep (actually update the TM's state)
-        RenderPhase.StartTransition _ ->
-          let machine' = Machine.update Machine.ExecuteStep machine
-          in (machine', RenderPhase.CompleteStep)
-
-        -- CompleteStep -> Init (set render phase back to first state)
-        RenderPhase.CompleteStep -> (machine, RenderPhase.Init)
-    True -> (machine, RenderPhase.Init)
+update : Float ->
+         (View, MachineView.Model, ProgramView.Model) ->
+         (View, MachineView.Model, ProgramView.Model)
+update _ (view, (machine, renderPhase), programViewContent) =
+  case view of
+    View.VMachine ->
+      let (machine', renderPhase') = MachineView.update (machine, renderPhase)
+      in (View.VMachine, (machine', renderPhase'), programViewContent)
+    View.VProgram ->
+      (View.VProgram, (machine, renderPhase), ProgramView.update programViewContent)
 
 
 {-|
-Triggers a tick every second.
+Triggers a tick at a constant time interval.
 -}
-mainSignal : Signal (Machine.Model, RenderPhase)
+mainSignal : Signal (View, MachineView.Model, ProgramView.Model)
 mainSignal =
-  Signal.foldp tick (Machine.init, RenderPhase.Init) (every (300 * millisecond))
+  Signal.foldp update init (every (300 * millisecond))
 
 
 {-|
@@ -56,8 +49,15 @@ Renders the game view.
 -}
 main : Signal Html
 main =
-  (\ (machine, renderPhase) ->
-    Html.div
-      [ Html.Attributes.class "game" ]
-      (Machine.view renderPhase machine)
+  (\ (view, (machine, renderPhase), programViewContent) ->
+    let content =
+      case view of
+        View.VProgram ->
+          ProgramView.view programViewContent
+        View.VMachine ->
+          MachineView.view (machine, renderPhase)
+    in
+      Html.div
+        [ Html.Attributes.class "game" ]
+        content
   ) <~ mainSignal
