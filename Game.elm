@@ -8,7 +8,6 @@ import Time exposing (every, millisecond)
 
 import Move exposing (Move)
 import MachineView
-import RenderPhase exposing (RenderPhase)
 import ProgramView
 import StartApp.Simple as StartApp
 import State exposing (State)
@@ -80,6 +79,7 @@ _-}
 {-|
 Renders the game view.
 -}
+-- TODO What exactly does Signal.forwardTo address action do here?!?!?
 view : Signal.Address Action -> (Model, Context) -> Html.Html
 view address (game, context) =
   let content =

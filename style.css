@@ -25,27 +25,56 @@ body {
   transform: translateX(-50%) translateY(-50%);
 }
 
-.game h1, .game h2 {
-  width: 100%;
-  font-weight: bold;
+button.switch-view {
+  background-color: #024;
+  color: #ddd;
+  border: solid 1px #aad;
+  border-radius: 3px;
+  padding: 5px;
+}
+button.switch-view:hover {
+  border: solid 1px #ddf;
+  background-color: #025;
+  color: #eee;
+  border: solid 1px #aad;
+}
+
+/******************************************************************************
+ * Program Design View
+ ******************************************************************************/
+
+table.program {
+  font: 100% sans-serif;
+  border-collapse: collapse;
+  empty-cells: show;
+}
+
+table.program td {
   text-align: center;
-  color: #aaa;
-  color: rgba(128, 128, 128, 0.3);
-  text-shadow: -1px -1px rgba(0, 0, 0, 0.2);
-  -webkit-text-rendering: optimizeLegibility;
-  -moz-text-rendering: optimizeLegibility;
-  -ms-text-rendering: optimizeLegibility;
-  -o-text-rendering: optimizeLegibility;
-  text-rendering: optimizeLegibility;
+  padding: .3em;
+  border: 1px solid black;
+  width: 20px;
+  height: 15px;
 }
 
-.game h1 {
-  font-size: 30px;
+table.program td.state {
 }
 
-.game h2 {
-  font-size: 20px;
+table.program td.symbol {
 }
+
+table.program td.move {
+}
+
+table.program td.spacer {
+  border: none;
+  padding: 0;
+  width: 10px;
+}
+
+/******************************************************************************
+ * Turing Machine View
+ ******************************************************************************/
 
 .cpu, .cpu * {
   position: absolute;

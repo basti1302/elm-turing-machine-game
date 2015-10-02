@@ -25,7 +25,9 @@
   ],
   "dependencies": {
     "elm": "^2.0.0",
-    "http-server": "^0.8.5"
+    "font-awesome": "^4.4.0",
+    "http-server": "^0.8.5",
+    "normalize.css": "^3.0.3"
   },
   "devDependencies": {
     "rimraf": "^2.4.3"

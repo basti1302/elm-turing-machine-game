@@ -15,7 +15,7 @@ import Tape
 
 
 inputSymbols : List Symbol
-inputSymbols = [ Symbol.Black ]
+inputSymbols = [ Symbol.A ]
 
 
 symbols : List Symbol
@@ -83,7 +83,7 @@ predictNextStep machine =
       Just (sy, st, mv) -> (sy, st, mv)
       -- TODO Propagating a Result (containing an error) up in switching the
       -- machine to "stopped" without abusing the HALT state would be cleaner.
-      Nothing -> (Symbol.White, HALT, Move.Right)
+      Nothing -> (Symbol.blank, State.HALT, Move.Right)
 
 {-|
 Reads the symbol at the current position of the head
@@ -126,7 +126,7 @@ executeStep machine =
       Just (symbol', state', move) -> transform (symbol', state', move) machine'
       Nothing ->
         let _ = Debug.log "Incomplete Turing machine program for" (machine'.state, symbol)
-        in Debug.log "Halting Turing machine at" (transform (Symbol.White, HALT, Move.Right) machine')
+        in Debug.log "Halting Turing machine at" (transform (Symbol.blank, State.HALT, Move.Right) machine')
 
 
 {-|

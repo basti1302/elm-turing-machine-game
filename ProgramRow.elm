@@ -1,12 +1,12 @@
 module ProgramRow (Model, init, Action, update, view) where
 
 import Html
+import Html.Attributes
 import Html.Events
-
 
 import Move exposing (Move)
 import Symbol exposing (Symbol)
-import State exposing (..)
+import State exposing (State)
 
 
 -- TODO Merge ProgramView.elm and Program.elm??
@@ -30,7 +30,7 @@ init stateIn symbolIn =
   { stateIn = stateIn
   , symbolIn = symbolIn
   , stateOut = State.A
-  , symbolOut = Symbol.White
+  , symbolOut = Symbol.blank
   , move = Move.Right
   }
 
@@ -41,16 +41,16 @@ update action model =
     ChangeStateOut ->
       let stateOut' =
         case model.stateOut of
-          A -> B
-          B -> C
-          C -> HALT
-          HALT -> A
+          State.A -> State.B
+          State.B -> State.C
+          State.C -> State.HALT
+          State.HALT -> State.A
       in { model | stateOut <- stateOut' }
     ChangeSymbolOut ->
       let symbolOut' =
         case model.symbolOut of
-          Symbol.White -> Symbol.Black
-          Symbol.Black -> Symbol.White
+          Symbol.Empty -> Symbol.A
+          Symbol.A -> Symbol.Empty
       in { model | symbolOut <- symbolOut' }
     ChangeMove ->
       let move' =
@@ -62,30 +62,43 @@ update action model =
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  Html.div []
-    [ Html.span
+  Html.tr []
+    [ Html.td
+      [ Html.Attributes.class "state" ]
+      [ let class = "fa " ++ State.toClass model.stateIn
+        in Html.span [Html.Attributes.class class] []
+      ]
+    , Html.td
+      [ Html.Attributes.class "symbol"
+      , Html.Attributes.style
+        [( "background-color" , Symbol.toColor model.symbolIn
+        )]
+      ]
       []
-      [ Html.text <| "[" ++ toString model.stateIn ++ ", " ]
-    , Html.span
+    , Html.td
+      [ Html.Attributes.class "spacer" ]
       []
-      [ Html.text <| toString model.symbolIn ++ "]"]
-    , Html.span
+    , Html.td
+      [ Html.Events.onClick address ChangeStateOut
+      , Html.Attributes.class "state " ]
+      [ let class = "fa " ++ State.toClass model.stateOut
+        in Html.span [Html.Attributes.class class] []
+      ]
+    , Html.td
+      [ Html.Events.onClick address ChangeSymbolOut
+      , Html.Attributes.class "symbol"
+      , Html.Attributes.style
+        [( "background-color" , Symbol.toColor model.symbolOut
+        )]
+      ]
       []
-      [ Html.text <| " => " ]
-    , Html.span
-      [ Html.Events.onClick address ChangeStateOut ]
-      [ Html.text <| "[" ++ toString model.stateOut ++ ", "]
-    , Html.span
-      [ Html.Events.onClick address ChangeSymbolOut ]
-      [ Html.text <| toString model.symbolOut ++ ", "]
-    , Html.span
-      [ Html.Events.onClick address ChangeMove ]
-      [ Html.text <| toString model.move ++ "]"]
+    , Html.td
+      [ Html.Events.onClick address ChangeMove
+      , Html.Attributes.class "move"
+      ]
+      [ let class = case model.move of
+          Move.Left -> "fa fa-arrow-circle-left"
+          Move.Right -> "fa fa-arrow-circle-right"
+        in Html.span [Html.Attributes.class class] []
+      ]
     ]
-
-
-{-
-main : Signal Html.Html
-main =
-  StartApp.start { model = init, view = view, update = update }
--}

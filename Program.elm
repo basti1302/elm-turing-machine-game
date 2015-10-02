@@ -2,7 +2,7 @@ module Program (Model, init) where -- , Action, update, view) where
 
 import Move exposing (Move)
 import Symbol exposing (Symbol)
-import State exposing (..)
+import State exposing (State)
 
 
 -- A Dict (State, Symbol) (Symbol, State, Move)
@@ -21,10 +21,10 @@ This one is the 3-state/2-symbol busy beaver.
 -}
 init : Model
 init =
-  [ (A, Symbol.White, Symbol.Black, B, Move.Right)
-  , (A, Symbol.Black, Symbol.Black, C, Move.Left)
-  , (B, Symbol.White, Symbol.Black, A, Move.Left)
-  , (B, Symbol.Black, Symbol.Black, B, Move.Right)
-  , (C, Symbol.White, Symbol.Black, B, Move.Left)
-  , (C, Symbol.Black, Symbol.Black, HALT, Move.Right)
+  [ (State.A, Symbol.Empty, Symbol.A, State.B,    Move.Right)
+  , (State.A, Symbol.A,     Symbol.A, State.C,    Move.Left)
+  , (State.B, Symbol.Empty, Symbol.A, State.A,    Move.Left)
+  , (State.B, Symbol.A,     Symbol.A, State.B,    Move.Right)
+  , (State.C, Symbol.Empty, Symbol.A, State.B,    Move.Left)
+  , (State.C, Symbol.A,     Symbol.A, State.HALT, Move.Right)
   ]
