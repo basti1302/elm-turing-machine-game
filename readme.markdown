@@ -1,15 +1,23 @@
 Turing Machine Puzzler
 ======================
 
-How to run this thing:
 
-1. Run `npm install`. This will install the correct elm version locally and also run `elm-make` as an npm postinstall hook. When `npm install` has finished there should be a file called `elm.js`.
-1. Serve the current directory with the HTTP server of your choice.
+Setup
+-----
+* Run `npm install`. This will install the correct elm version locally and also run `elm-make` as an npm postinstall hook. When `npm install` has finished there should be a file called `elm.js`.
 
-Development
------------
+Development Mode
+----------------
 
-You can either
+* `npm run dev` starts elm-reactor with the correct ELM_HOME set (alternatively, you could do `ELM_HOME=node_modules/elm/share node_modules/.bin/elm-reactor` manually).
+* Go to <http://localhost:8000/index.debug.html>.
+* You now see the Elm app in the integrated Elm debugger and live reload enabled.
 
-* `npm run make`: to run elm-make after every change to (re-)create `elm.js`, while serving this directory with your favourite HTTP server, or
-* `npm start`: start elm-reactor, which starts a server with live reload on <http://localhost:8000/Game.elm>. (Unfortunately, this does not use the custom static html, so the styling will be missing. You can also access <http://localhost:8000/index.html> but I couldn't get the live reload to work there).
+
+Pseudo Production Mode
+----------------------
+
+* `npm start` starts the app in "production mode" by simply building it with `elm-make` and then serving it via [http-server](https://github.com/indexzero/http-server).
+* Go to <http://localhost:8080/index.html>.
+    * This is the "production" view. No live reload, no debugger.
+    * If you change the code, you need to rebuild `elm.js` by executing `npm run make` or by stopping the running http-server and execute `npm start` again (which will also trigger `npm run make`).

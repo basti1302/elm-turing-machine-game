@@ -1,6 +1,6 @@
 module Game (main) where
 
-import Html exposing (Html)
+import Html
 import Html.Attributes
 import List
 import Signal exposing (Signal, (<~), (~))
@@ -10,54 +10,91 @@ import Move exposing (Move)
 import MachineView
 import RenderPhase exposing (RenderPhase)
 import ProgramView
+import StartApp.Simple as StartApp
 import State exposing (State)
-import View exposing (View)
-
-type alias Model = (View, MachineView.Model, ProgramView.Model)
+import Screen exposing (Screen)
 
 
-init : Model
+type alias Model =
+  { machineView : MachineView.Model
+  , programView : ProgramView.Model
+  }
+
+
+type alias Context = { view : Screen }
+
+
+type Action
+  = MachineAction MachineView.Action
+  | ProgramAction ProgramView.Action
+
+
+init : (Model, Context)
 init =
-  (View.VMachine, MachineView.init, ProgramView.init)
-
+  ({ machineView = MachineView.init
+   , programView = ProgramView.init
+   }, { view = Screen.Program })
 
 {-|
 Updates the current view on each signal tick.
 -}
-update : Float ->
-         (View, MachineView.Model, ProgramView.Model) ->
-         (View, MachineView.Model, ProgramView.Model)
-update _ (view, (machine, renderPhase), programViewContent) =
-  case view of
-    View.VMachine ->
-      let (machine', renderPhase') = MachineView.update (machine, renderPhase)
-      in (View.VMachine, (machine', renderPhase'), programViewContent)
-    View.VProgram ->
-      (View.VProgram, (machine, renderPhase), ProgramView.update programViewContent)
+update : Action -> (Model, Context) -> (Model, Context)
+update action (game, context) =
+  case action of
+    MachineAction machineAction ->
+      case machineAction of
+        MachineView.SwitchToProgram ->
+          (game, { context | view <- Screen.Program })
+        otherwise ->
+          let
+            (machine', renderPhase') = MachineView.update machineAction game.machineView
+          in
+            ({ game | machineView <- (machine', renderPhase') }, context)
+    ProgramAction programAction ->
+      case programAction of
+        ProgramView.SwitchToMachine ->
+          (game, { context | view <- Screen.Machine })
+        otherwise ->
+          ({ game |
+             programView <- ProgramView.update programAction game.programView },
+             context
+          )
+
+
+{--
+inputSignal : Signal Float
+inputSignal = every <| 300 * millisecond
+--}
 
 
 {-|
 Triggers a tick at a constant time interval.
 -}
-mainSignal : Signal (View, MachineView.Model, ProgramView.Model)
+{--
+mainSignal : Signal (Screen, MachineView.Model, ProgramView.Model)
 mainSignal =
-  Signal.foldp update init (every (300 * millisecond))
+  Signal.foldp update init inputSignal
+_-}
 
 
 {-|
 Renders the game view.
 -}
-main : Signal Html
+view : Signal.Address Action -> (Model, Context) -> Html.Html
+view address (game, context) =
+  let content =
+    case context.view of
+      Screen.Program ->
+        [ ProgramView.view (Signal.forwardTo address ProgramAction) game.programView ]
+      Screen.Machine ->
+        MachineView.view (Signal.forwardTo address MachineAction) game.machineView
+  in
+    Html.div
+      [ Html.Attributes.class "game" ]
+      content
+
+
+main : Signal Html.Html
 main =
-  (\ (view, (machine, renderPhase), programViewContent) ->
-    let content =
-      case view of
-        View.VProgram ->
-          ProgramView.view programViewContent
-        View.VMachine ->
-          MachineView.view (machine, renderPhase)
-    in
-      Html.div
-        [ Html.Attributes.class "game" ]
-        content
-  ) <~ mainSignal
+  StartApp.start { model = init, view = view, update = update }
+--main = view <~ mainSignal

@@ -25,6 +25,6 @@ init =
   , (A, Symbol.Black, Symbol.Black, C, Move.Left)
   , (B, Symbol.White, Symbol.Black, A, Move.Left)
   , (B, Symbol.Black, Symbol.Black, B, Move.Right)
-  --, (C, Symbol.White, Symbol.Black, B, Move.Left)
+  , (C, Symbol.White, Symbol.Black, B, Move.Left)
   , (C, Symbol.Black, Symbol.Black, HALT, Move.Right)
   ]

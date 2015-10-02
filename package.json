@@ -4,9 +4,12 @@
   "private": true,
   "description": "A puzzle game inspired by the concept of Turing machines, written in Elm",
   "scripts": {
-    "start": "ELM_HOME=node_modules/elm/share elm-reactor",
+    "postinstall": "npm run make",
+    "clean": "rimraf elm-stuff/build-artifacts",
     "make": "elm-make Game.elm",
-    "postinstall": "npm run make"
+    "clean-make": "npm run clean && npm run make",
+    "dev": "npm run clean-make && ELM_HOME=node_modules/elm/share elm-reactor",
+    "start": "npm run make && http-server"
   },
   "repository": {
     "type": "git",
@@ -21,6 +24,10 @@
     "elm"
   ],
   "dependencies": {
-    "elm": "^2.0.0"
+    "elm": "^2.0.0",
+    "http-server": "^0.8.5"
+  },
+  "devDependencies": {
+    "rimraf": "^2.4.3"
   }
 }

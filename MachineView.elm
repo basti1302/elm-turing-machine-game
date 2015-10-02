@@ -1,12 +1,18 @@
-module MachineView (Model, init, update, view) where
+module MachineView (Model, init, Action(SwitchToProgram), update, view) where
 
-import Html exposing (Html)
+import Html
+import Html.Events
 
 import Machine
 import RenderPhase exposing (RenderPhase)
 
 
+-- TODO Maybe the RenderPhase should be an Action instead?? Or context? It
+-- feels wrong to have it in the model.
 type alias Model = (Machine.Model, RenderPhase)
+
+
+type Action = SwitchToProgram
 
 
 init : Model
@@ -16,8 +22,8 @@ init = (Machine.init, RenderPhase.Init)
 {-|
 Advances the Turing machine view by one renderPhase.
 -}
-update: Model -> Model
-update (machine, renderPhase)  =
+update: Action -> Model -> Model
+update action (machine, renderPhase)  =
   case machine.stopped of
     False ->
       let
@@ -43,6 +49,8 @@ update (machine, renderPhase)  =
     True -> (machine, RenderPhase.Init)
 
 
-view : Model -> List Html.Html
-view (machine, renderPhase)  =
-  Machine.view renderPhase machine
+view : Signal.Address Action -> Model -> List Html.Html
+view address (machine, renderPhase)  =
+  List.append
+    (Machine.view renderPhase machine)
+    [Html.button [ Html.Events.onClick address SwitchToProgram ] [ Html.text "PROGRAM" ]]
