@@ -1,5 +1,7 @@
 module Game (main) where
 
+import Debug
+
 import Html
 import Html.Attributes
 import List
@@ -44,23 +46,35 @@ update : Action -> (Model, Context) -> (Model, Context)
 update action (game, context) =
   case action of
     MachineAction machineAction ->
-      case machineAction of
-        MachineView.SwitchToProgram ->
-          (game, { context | view <- Screen.Program })
-        otherwise ->
-          let
-            (machine', renderPhase') = MachineView.update machineAction game.machineView
-          in
-            ({ game | machineView <- (machine', renderPhase') }, context)
+      if context.view /= Screen.Machine
+        then (game, context) -- do not run machine program if not in machine view
+        else
+          case machineAction of
+            MachineView.SwitchToProgram ->
+              (game, { context | view <- Screen.Program })
+            otherwise ->
+              let
+                (machine', renderPhase') = MachineView.update machineAction game.machineView
+              in
+                ({ game | machineView <- (machine', renderPhase') }, context)
     ProgramAction programAction ->
-      case programAction of
-        ProgramView.SwitchToMachine ->
-          (game, { context | view <- Screen.Machine })
-        otherwise ->
-          ({ game |
-             programView <- ProgramView.update programAction game.programView },
-             context
-          )
+      if context.view /= Screen.Program
+        then (game, context) -- do not execute program actions if not in program view
+        else
+          case programAction of
+            ProgramView.SwitchToMachine ->
+              let
+                program = ProgramView.getProgram game.programView
+              in ({game |
+                   machineView <-
+                   MachineView.initWithProgram program
+               }
+              , { context | view <- Screen.Machine })
+            otherwise ->
+              ({ game |
+                 programView <- ProgramView.update programAction game.programView },
+                 context
+              )
 
 
 {-|

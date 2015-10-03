@@ -1,6 +1,7 @@
 module ProgramView
   ( Model
   , init
+  , getProgram
   , Action(SwitchToMachine)
   , update
   , view
@@ -11,6 +12,7 @@ import Html.Attributes
 import Html.Events
 import StartApp.Simple as StartApp
 
+import Program
 import ProgramRow
 import State exposing (State)
 import Symbol exposing (Symbol)
@@ -44,6 +46,10 @@ init =
   , nextId = 6
   }
 
+
+getProgram : Model -> Program.Model
+getProgram model =
+  List.map (\(_, row) -> ProgramRow.toQuintupel row) model.rows
 
 update : Action -> Model -> Model
 update action model =

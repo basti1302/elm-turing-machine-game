@@ -1,4 +1,4 @@
-module ProgramRow (Model, init, Action, update, view) where
+module ProgramRow (Model, init, toQuintupel, Action, update, view) where
 
 import Html
 import Html.Attributes
@@ -34,6 +34,10 @@ init stateIn symbolIn =
   , move = Move.Right
   }
 
+
+toQuintupel : Model -> (State, Symbol, Symbol, State, Move)
+toQuintupel row =
+  (row.stateIn, row.symbolIn, row.symbolOut, row.stateOut, row.move)
 
 update : Action -> Model -> Model
 update action model =

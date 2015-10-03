@@ -1,15 +1,18 @@
 module MachineView
   ( Model
   , init
+  , initWithProgram
   , Action(ExecuteMachineStep, SwitchToProgram)
   , update
   , view
   ) where
 
+import Debug
 import Html
 import Html.Events
 
 import Machine
+import Program
 import RenderPhase exposing (RenderPhase)
 
 
@@ -22,7 +25,11 @@ type Action = ExecuteMachineStep | SwitchToProgram
 
 
 init : Model
-init = (Machine.init, RenderPhase.Init)
+init = (Machine.init Program.init, RenderPhase.Init)
+
+
+initWithProgram : Program.Model -> Model
+initWithProgram program = (Machine.init program, RenderPhase.Init)
 
 
 {-|
@@ -34,8 +41,8 @@ update action (machine, renderPhase)  =
     SwitchToProgram -> (machine, renderPhase)
     ExecuteMachineStep -> case machine.stopped of
       False ->
-        let
-          (nextSymbol, nextState, nextMove) = Machine.predictNextStep machine
+        let (nextSymbol, nextState, nextMove) =
+          (Machine.predictNextStep machine)
         in case renderPhase of
 
           -- Init -> WriteSymbol (write the next symbol to head's position)

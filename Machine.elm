@@ -31,43 +31,22 @@ acceptingStates = [ HALT ]
 
 
 type alias Model  =
-  { state: State
-  , tape: Tape.Model
-  , head: Int
-  , stopped: Bool
+  { state : State
+  , tape : Tape.Model
+  , head : Int
+  , program : Program.Model
+  , stopped : Bool
   }
 
 
-init : Model
-init =
+init : Program.Model -> Model
+init program =
   { state = initialState
   , tape = Array.fromList [ Cell.blank ]
   , head = 0
+  , program = program
   , stopped = False
   }
-
-
-program : Program.Model
-program = Program.init
-
-
-{-|
-Executes the Turing machine program once on the given input state and input
-symbol.
--}
--- TODO Replace Maybe type be Result
-executeProgram : (State, Symbol) -> Maybe (Symbol, State, Move)
-executeProgram (state, symbol) =
-  let
-    candidates = List.filter
-      (\ (state1, symbol1, _, _, _) -> state == state1 && symbol == symbol1)
-      program
-    maybeStatement = if List.length candidates == 1
-      then List.head candidates
-      else Nothing
-  in case maybeStatement of
-    Just (_, _, symbol', state', move) -> Just (symbol', state', move)
-    Nothing -> Nothing
 
 
 {-|
@@ -77,7 +56,7 @@ on the current state of the machine) without actually performing it.
 predictNextStep : Model -> (Symbol, State, Move)
 predictNextStep machine =
   let
-    maybeInstruction = executeProgram (machine.state, read machine)
+    maybeInstruction = Program.execute (machine.state, read machine) machine.program
   in
     case maybeInstruction of
       Just (sy, st, mv) -> (sy, st, mv)
@@ -120,7 +99,7 @@ executeStep machine =
     head' = fixHeadPosition machine.head
     machine' = { machine | tape <- extendedTape, head <- head' }
     symbol = read machine'
-    maybeInstruction = executeProgram (machine'.state, symbol)
+    maybeInstruction = Program.execute (machine'.state, symbol) machine.program
   in
     case maybeInstruction of
       Just (symbol', state', move) -> transform (symbol', state', move) machine'
@@ -141,10 +120,11 @@ transform (symbolToWrite, newState, move) machine =
     writeAt = machine.head
     newHead = calcHeadPosition move machine.head
   in
-    { state = newState
-    , tape = Tape.update (Tape.Write writeAt (Cell.Write symbolToWrite)) machine.tape
-    , head = newHead
-    , stopped = List.member newState acceptingStates
+    { machine |
+      state   <- newState
+    , tape    <- Tape.update (Tape.Write writeAt (Cell.Write symbolToWrite)) machine.tape
+    , head    <- newHead
+    , stopped <- List.member newState acceptingStates
     }
 
 
@@ -178,7 +158,8 @@ view renderPhase machine =
     otherwise -> machine.state
   in
     [ Html.div [ Html.Attributes.class "cpu" ] [
-        Html.span [] [Html.text <| toString state]
+        Html.span
+        [ Html.Attributes.class ("fa " ++ State.toClass state) ] []
       ]
     , Html.div [ Html.Attributes.class "head" ] []
     , Html.div

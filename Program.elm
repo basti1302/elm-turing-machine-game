@@ -1,5 +1,6 @@
-module Program (Model, init) where -- , Action, update, view) where
+module Program (Model, init, execute) where
 
+import Debug
 import Move exposing (Move)
 import Symbol exposing (Symbol)
 import State exposing (State)
@@ -28,3 +29,23 @@ init =
   , (State.C, Symbol.Empty, Symbol.A, State.B,    Move.Left)
   , (State.C, Symbol.A,     Symbol.A, State.HALT, Move.Right)
   ]
+
+{-|
+Executes the Turing machine program once on the given input state and input
+symbol.
+-}
+-- TODO Replace Maybe type be Result
+execute : (State, Symbol) -> Model -> Maybe (Symbol, State, Move)
+execute (state, symbol) program =
+  let
+    candidates = List.filter
+      (\ (state1, symbol1, _, _, _) -> state == state1 && symbol == symbol1)
+      program
+    maybeStatement = if List.length candidates == 1
+      then List.head candidates
+      else Nothing
+  in case maybeStatement of
+    Just (_, _, symbol', state', move) -> Just (symbol', state', move)
+    Nothing -> Nothing
+
+
