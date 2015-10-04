@@ -6,7 +6,12 @@ module Instruction
   , fromQuintuple
   , Action
   , update
-  , view
+  , viewInputState
+  , viewInputSymbol
+  , spacer
+  , viewOutputState
+  , viewOutputSymbol
+  , viewMove
   ) where
 
 
@@ -95,45 +100,58 @@ update action instruction =
       in { instruction | output <- { output | move <- move' }}
 
 
-view : Signal.Address Action -> Model -> Html.Html
-view address instruction =
-  Html.tr []
-    [ Html.td
-      [ Html.Attributes.class "state" ]
-      [ let class = "fa " ++ State.toClass instruction.input.state
-        in Html.span [Html.Attributes.class class] []
-      ]
-    , Html.td
-      [ Html.Attributes.class "symbol"
-      , Html.Attributes.style
-        [( "background-color" , Symbol.toColor instruction.input.symbol
-        )]
-      ]
-      []
-    , Html.td
-      [ Html.Attributes.class "spacer" ]
-      []
-    , Html.td
-      [ Html.Events.onClick address ChangeStateOut
-      , Html.Attributes.class "state " ]
-      [ let class = "fa " ++ State.toClass instruction.output.state
-        in Html.span [Html.Attributes.class class] []
-      ]
-    , Html.td
-      [ Html.Events.onClick address ChangeSymbolOut
-      , Html.Attributes.class "symbol"
-      , Html.Attributes.style
-        [( "background-color" , Symbol.toColor instruction.output.symbol
-        )]
-      ]
-      []
-    , Html.td
-      [ Html.Events.onClick address ChangeMove
-      , Html.Attributes.class "move"
-      ]
-      [ let class = case instruction.output.move of
-          Move.Left -> "fa fa-arrow-circle-left"
-          Move.Right -> "fa fa-arrow-circle-right"
-        in Html.span [Html.Attributes.class class] []
-      ]
+viewInputState : Model -> Html.Html
+viewInputState instruction =
+  Html.td
+    [ Html.Attributes.class "state" ]
+    [ let class = "fa " ++ State.toClass instruction.input.state
+      in Html.span [Html.Attributes.class class] []
+    ]
+
+viewInputSymbol : Model -> Html.Html
+viewInputSymbol instruction =
+  Html.td
+    [ Html.Attributes.class "symbol"
+    , Html.Attributes.style
+      [( "background-color" , Symbol.toColor instruction.input.symbol
+      )]
+    ]
+    []
+
+spacer : Html.Html
+spacer =
+  Html.td
+    [ Html.Attributes.class "spacer" ]
+    []
+
+viewOutputState : Signal.Address Action -> Model -> Html.Html
+viewOutputState address instruction =
+  Html.td
+    [ Html.Events.onClick address ChangeStateOut
+    , Html.Attributes.class "state " ]
+    [ let class = "fa " ++ State.toClass instruction.output.state
+      in Html.span [Html.Attributes.class class] []
+    ]
+
+viewOutputSymbol : Signal.Address Action -> Model -> Html.Html
+viewOutputSymbol address instruction =
+  Html.td
+    [ Html.Events.onClick address ChangeSymbolOut
+    , Html.Attributes.class "symbol"
+    , Html.Attributes.style
+      [( "background-color" , Symbol.toColor instruction.output.symbol
+      )]
+    ]
+    []
+
+viewMove : Signal.Address Action -> Model -> Html.Html
+viewMove address instruction =
+  Html.td
+    [ Html.Events.onClick address ChangeMove
+    , Html.Attributes.class "move"
+    ]
+    [ let class = case instruction.output.move of
+        Move.Left -> "fa fa-arrow-circle-left"
+        Move.Right -> "fa fa-arrow-circle-right"
+      in Html.span [Html.Attributes.class class] []
     ]

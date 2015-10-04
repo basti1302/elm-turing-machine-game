@@ -10,9 +10,7 @@ module Program
 import Html
 import Html.Attributes
 import Html.Events
-import StartApp.Simple as StartApp
 
--- import Program
 import Instruction
 import State exposing (State)
 import Symbol exposing (Symbol)
@@ -34,10 +32,10 @@ type Action
 init : Model
 init =
   [ Instruction.fromInput State.A Symbol.Empty
-  , Instruction.fromInput State.A Symbol.A
   , Instruction.fromInput State.B Symbol.Empty
-  , Instruction.fromInput State.B Symbol.A
   , Instruction.fromInput State.C Symbol.Empty
+  , Instruction.fromInput State.A Symbol.A
+  , Instruction.fromInput State.B Symbol.A
   , Instruction.fromInput State.C Symbol.A
   ]
 
@@ -75,30 +73,60 @@ update action model =
         List.map updateRow model
 
 
-viewRow : Signal.Address Action -> Instruction.Model -> Html.Html
-viewRow address instruction =
-  Instruction.view (Signal.forwardTo address (Modify instruction.input)) instruction
+convertSignal : Signal.Address Action -> Instruction.Model -> Signal.Address Instruction.Action
+convertSignal address instruction =
+  Signal.forwardTo address (Modify instruction.input)
 
 
--- TODO Maybe pivot the table and show current rows as columns? Might be better
--- in line with the Turing machine view, which is currently rather landscape-ish
--- instead of portrait-ish.
+viewWithInput : Signal.Address Action ->
+      (Signal.Address Instruction.Action -> Instruction.Model -> Html.Html) ->
+      Instruction.Model ->
+      Html.Html
+viewWithInput address renderFunction instruction =
+  renderFunction (convertSignal address instruction) instruction
+
+
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  let thead = Html.thead []
-        [ Html.tr []
-          [ Html.td [ Html.Attributes.colspan 2 ] [ Html.text "In" ]
-          , Html.td [ Html.Attributes.class "spacer" ] []
-          , Html.td [ Html.Attributes.colspan 3 ] [ Html.text "Out" ]
-          ]
-        ]
-      rows = List.map (viewRow address) model
-      tbody = Html.tbody [] rows
-      tableContent = thead :: [ tbody ]
-      table = Html.table [ Html.Attributes.class "program" ] tableContent
-      switchView = Html.button
-        [ Html.Events.onClick address SwitchToMachine
-        , Html.Attributes.class "switch-view" ]
-        [ Html.text "EXECUTE" ]
+  let
+    tdsInputSymbols = List.map Instruction.viewInputSymbol model
+    tdsInputSymbolsWithHeader =
+      (Html.td [ Html.Attributes.rowspan 2 ] [ Html.text "In" ])
+      :: tdsInputSymbols
+    rowInputSymbols = Html.tr [] tdsInputSymbolsWithHeader
+    rowInputStates = Html.tr [] <| List.map Instruction.viewInputState model
+
+    rowSpacers = Html.tr [] <| List.repeat (List.length model) Instruction.spacer
+
+    tdsOutputSymbols =
+      List.map (viewWithInput address Instruction.viewOutputSymbol) model
+    tdsOutputSymbolsWithHeader =
+      (Html.td [ Html.Attributes.rowspan 3 ] [ Html.text "Out" ])
+      :: tdsOutputSymbols
+    rowOutputSymbols = Html.tr [] tdsOutputSymbolsWithHeader
+    rowOutputStates = Html.tr [] <|
+      List.map (viewWithInput address Instruction.viewOutputState) model
+    rowMoves = Html.tr [] <|
+      List.map (viewWithInput address Instruction.viewMove) model
+    rows =
+       [ rowInputSymbols
+       , rowInputStates
+       , rowSpacers
+       , rowOutputSymbols
+       , rowOutputStates
+       , rowMoves
+       ]
+
+    tableContent = [ Html.tbody [] rows ]
+    table = Html.table [ Html.Attributes.class "program" ] tableContent
+    switchView = Html.button
+      [ Html.Events.onClick address SwitchToMachine
+      , Html.Attributes.class "fa fa-play" ]
+      []
+    reset = Html.button
+      [ Html.Events.onClick address Reset
+      , Html.Attributes.class "fa fa-refresh" ]
+      []
+
   in
-    Html.div [] (table :: [switchView])
+    Html.div [] (table :: [switchView, reset])

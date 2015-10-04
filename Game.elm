@@ -1,17 +1,12 @@
 module Game (main) where
 
-import Debug
-
 import Html
 import Html.Attributes
-import List
 import Signal exposing (Signal, (<~), (~))
 import Time exposing (every, millisecond)
 
-import Move exposing (Move)
 import MachineView
 import Program
-import State exposing (State)
 import Screen exposing (Screen)
 
 

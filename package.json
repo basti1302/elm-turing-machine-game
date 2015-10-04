@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "npm run make",
     "clean": "rimraf elm-stuff/build-artifacts",
-    "make": "elm-make Game.elm",
+    "make": "elm-make --warn Game.elm",
     "clean-make": "npm run clean && npm run make",
     "dev": "npm run clean-make && ELM_HOME=node_modules/elm/share elm-reactor",
     "start": "npm run make && http-server"

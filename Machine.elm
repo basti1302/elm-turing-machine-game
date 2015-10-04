@@ -14,10 +14,12 @@ import State exposing (..)
 import Tape
 
 
+-- TODO Currently ignored
 inputSymbols : List Symbol
 inputSymbols = [ Symbol.A ]
 
 
+-- TODO Currently ignored
 symbols : List Symbol
 symbols = List.append inputSymbols [ Symbol.blank ]
 

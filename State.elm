@@ -6,11 +6,11 @@ toClass : State -> String
 toClass state =
   case state of
     A    -> "fa-circle-thin"
-    B    -> "fa-circle"
-    C    -> "fa-dot-circle-o"
-    D    -> "fa-cog"
-    E    -> "fa-transgender"
-    F    -> "fa-diamond"
-    G    -> "fa-cube"
+    B    -> "fa-dot-circle-o"
+    C    -> "fa-circle"
+    D    -> "fa-transgender"
+    E    -> "fa-diamond"
+    F    -> "fa-cube"
+    G    -> "fa-cog"
     HALT -> "fa-pause"
 

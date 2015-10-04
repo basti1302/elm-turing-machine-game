@@ -25,18 +25,20 @@ body {
   transform: translateX(-50%) translateY(-50%);
 }
 
-button.switch-view {
-  background-color: #024;
-  color: #ddd;
-  border: solid 1px #aad;
+button {
+  width: 40px;
+  height: 30px;
+  background-color: #ccc;
+  color: #222;
+  border: none;
   border-radius: 3px;
   padding: 5px;
+  margin: 5px;
 }
-button.switch-view:hover {
-  border: solid 1px #ddf;
-  background-color: #025;
-  color: #eee;
-  border: solid 1px #aad;
+button:hover {
+  background-color: #ddd;
+  border: none;
+  color: #333;
 }
 
 /******************************************************************************

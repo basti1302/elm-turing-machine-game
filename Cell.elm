@@ -2,7 +2,6 @@ module Cell (Model, fromSymbol, blank, Action(Write), update, view) where
 
 import Html
 import Html.Attributes
-import String exposing (toLower)
 
 import Move exposing (Move)
 import RenderPhase exposing (RenderPhase)

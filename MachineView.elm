@@ -7,8 +7,8 @@ module MachineView
   , view
   ) where
 
-import Debug
 import Html
+import Html.Attributes
 import Html.Events
 
 import Machine
@@ -68,4 +68,8 @@ view : Signal.Address Action -> Model -> List Html.Html
 view address (machine, renderPhase)  =
   List.append
     (Machine.view renderPhase machine)
-    [Html.button [ Html.Events.onClick address SwitchToProgram ] [ Html.text "PROGRAM" ]]
+    [ Html.button
+      [ Html.Events.onClick address SwitchToProgram
+      , Html.Attributes.class "fa fa-cog" ]
+      []
+    ]

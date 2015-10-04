@@ -6,7 +6,6 @@ import Html
 import Html.Attributes
 
 import Cell
-import Move exposing (Move)
 import RenderPhase exposing (RenderPhase)
 import Symbol exposing (Symbol)
 
