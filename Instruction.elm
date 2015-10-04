@@ -111,7 +111,8 @@ viewInputState instruction =
 viewInputSymbol : Model -> Html.Html
 viewInputSymbol instruction =
   Html.td
-    [ Html.Attributes.class "symbol"
+    [ Html.Attributes.class
+        ("symbol-" ++ Symbol.toColor instruction.input.symbol)
     , Html.Attributes.style
       [( "background-color" , Symbol.toColor instruction.input.symbol
       )]
@@ -137,12 +138,13 @@ viewOutputSymbol : Signal.Address Action -> Model -> Html.Html
 viewOutputSymbol address instruction =
   Html.td
     [ Html.Events.onClick address ChangeSymbolOut
-    , Html.Attributes.class "symbol"
+    , Html.Attributes.class
+        ("symbol-" ++ Symbol.toColor instruction.output.symbol)
     , Html.Attributes.style
-      [( "background-color" , Symbol.toColor instruction.output.symbol
-      )]
+      [("background-color", Symbol.toColor instruction.output.symbol)]
     ]
     []
+
 
 viewMove : Signal.Address Action -> Model -> Html.Html
 viewMove address instruction =

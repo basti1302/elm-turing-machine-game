@@ -43,9 +43,9 @@ view renderPhase model =
       otherwise -> ("", "")
   in
     Html.span
-    [ Html.Attributes.class "cell"
+    [ Html.Attributes.class ("cell-" ++ Symbol.toColor model.symbol)
     , Html.Attributes.style
-      [ ("background-color" , Symbol.toColor model.symbol)
+      [ ("background-color", Symbol.toColor model.symbol)
       , ("width", "48px")
       , ("height", "48px")
       , ("float", "left")
