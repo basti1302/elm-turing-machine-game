@@ -7,5 +7,5 @@ import Symbol exposing (Symbol)
 type RenderPhase =
     Init
   | WriteSymbol Symbol
-  | StartTransition (Symbol, State, Move)
+  | StartTransition (State, Symbol, Move)
   | CompleteStep

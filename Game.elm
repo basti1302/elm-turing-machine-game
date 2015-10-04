@@ -10,14 +10,14 @@ import Time exposing (every, millisecond)
 
 import Move exposing (Move)
 import MachineView
-import ProgramView
+import Program
 import State exposing (State)
 import Screen exposing (Screen)
 
 
 type alias Model =
   { machineView : MachineView.Model
-  , programView : ProgramView.Model
+  , program : Program.Model
   }
 
 
@@ -26,7 +26,7 @@ type alias Context = { view : Screen }
 
 type Action
   = MachineAction MachineView.Action
-  | ProgramAction ProgramView.Action
+  | ProgramAction Program.Action
 
 
 {-|
@@ -35,7 +35,7 @@ Initializes the model and the context.
 init : (Model, Context)
 init =
   ({ machineView = MachineView.init
-   , programView = ProgramView.init
+   , program = Program.init
    }, { view = Screen.Program })
 
 
@@ -62,17 +62,15 @@ update action (game, context) =
         then (game, context) -- do not execute program actions if not in program view
         else
           case programAction of
-            ProgramView.SwitchToMachine ->
-              let
-                program = ProgramView.getProgram game.programView
-              in ({game |
+            Program.SwitchToMachine ->
+              ({game |
                    machineView <-
-                   MachineView.initWithProgram program
+                   MachineView.initWithProgram game.program
                }
               , { context | view <- Screen.Machine })
             otherwise ->
               ({ game |
-                 programView <- ProgramView.update programAction game.programView },
+                 program <- Program.update programAction game.program },
                  context
               )
 
@@ -85,7 +83,7 @@ view address (game, context) =
   let content =
     case context.view of
       Screen.Program ->
-        [ ProgramView.view (Signal.forwardTo address ProgramAction) game.programView ]
+        [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
       Screen.Machine ->
         MachineView.view (Signal.forwardTo address MachineAction) game.machineView
   in

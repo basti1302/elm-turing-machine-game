@@ -96,7 +96,7 @@ view renderPhase head tape =
       case renderPhase of
         RenderPhase.WriteSymbol symbol ->
           Cell.fromSymbol symbol
-        RenderPhase.StartTransition (symbol, state, move) ->
+        RenderPhase.StartTransition (state, symbol, move) ->
           Cell.fromSymbol symbol
         otherwise ->
           case cellAtHeadMaybe of

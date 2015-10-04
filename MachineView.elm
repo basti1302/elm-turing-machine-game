@@ -41,7 +41,7 @@ update action (machine, renderPhase)  =
     SwitchToProgram -> (machine, renderPhase)
     ExecuteMachineStep -> case machine.stopped of
       False ->
-        let (nextSymbol, nextState, nextMove) =
+        let (nextState, nextSymbol, nextMove) =
           (Machine.predictNextStep machine)
         in case renderPhase of
 
@@ -52,7 +52,7 @@ update action (machine, renderPhase)  =
           -- according to move direction)
           RenderPhase.WriteSymbol _ ->
             (machine, RenderPhase.StartTransition
-              (nextSymbol, nextState, nextMove))
+              (nextState, nextSymbol, nextMove))
 
           -- StartTransition -> CompleteStep (actually update the TM's state)
           RenderPhase.StartTransition _ ->

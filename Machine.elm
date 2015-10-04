@@ -53,16 +53,21 @@ init program =
 Predicts the next step (the outcome of executing the Turing machine program once
 on the current state of the machine) without actually performing it.
 -}
-predictNextStep : Model -> (Symbol, State, Move)
+predictNextStep : Model -> (State, Symbol, Move)
 predictNextStep machine =
   let
     maybeInstruction = Program.execute (machine.state, read machine) machine.program
   in
     case maybeInstruction of
-      Just (sy, st, mv) -> (sy, st, mv)
+      Just instruction ->
+        ( instruction.output.state
+        , instruction.output.symbol
+        , instruction.output.move
+        )
       -- TODO Propagating a Result (containing an error) up in switching the
       -- machine to "stopped" without abusing the HALT state would be cleaner.
-      Nothing -> (Symbol.blank, State.HALT, Move.Right)
+      Nothing -> (State.HALT, Symbol.blank, Move.Right)
+
 
 {-|
 Reads the symbol at the current position of the head
@@ -102,10 +107,14 @@ executeStep machine =
     maybeInstruction = Program.execute (machine'.state, symbol) machine.program
   in
     case maybeInstruction of
-      Just (symbol', state', move) -> transform (symbol', state', move) machine'
+      Just instruction -> transform
+        ( instruction.output.state
+        , instruction.output.symbol
+        , instruction.output.move
+        ) machine'
       Nothing ->
         let _ = Debug.log "Incomplete Turing machine program for" (machine'.state, symbol)
-        in Debug.log "Halting Turing machine at" (transform (Symbol.blank, State.HALT, Move.Right) machine')
+        in Debug.log "Halting Turing machine at" (transform (State.HALT, Symbol.blank, Move.Right) machine')
 
 
 {-|
@@ -114,8 +123,8 @@ state, head position), execute one step of the Turing machine program and put
 return the next complete Turing machine state (new tape content, new internal
 state, new head position).
 -}
-transform : (Symbol, State, Move) -> Model -> Model
-transform (symbolToWrite, newState, move) machine =
+transform : (State, Symbol, Move) -> Model -> Model
+transform (newState, symbolToWrite, move) machine =
   let
     writeAt = machine.head
     newHead = calcHeadPosition move machine.head
@@ -154,7 +163,7 @@ Renders the machine to HTML.
 view : RenderPhase -> Model -> List Html.Html
 view renderPhase machine =
   let state = case renderPhase of
-    RenderPhase.StartTransition (_, nextState, _) -> nextState
+    RenderPhase.StartTransition (nextState, _, _) -> nextState
     otherwise -> machine.state
   in
     [ Html.div [ Html.Attributes.class "cpu" ] [
