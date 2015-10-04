@@ -80,7 +80,7 @@ view address (game, context) =
       Screen.Program ->
         [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
       Screen.Machine ->
-        MachineView.view (Signal.forwardTo address MachineAction) game.machineView
+        [ MachineView.view (Signal.forwardTo address MachineAction) game.machineView ]
   in
     Html.div
       [ Html.Attributes.class "game" ]

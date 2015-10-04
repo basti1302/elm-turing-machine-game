@@ -2,6 +2,11 @@ html,
 body {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 body {
@@ -23,67 +28,128 @@ body {
 
 .game {
   position: absolute;
-  width: calc(9 * 60px);
-  height: 200px;
+  width: 320px;
+  height: 240px;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
 
-button {
-  width: 40px;
+.buttons {
+  width: 100%;
   height: 30px;
+  text-align: center;
+}
+
+button {
+  width: 120px;
+  height: 26px;
+  font-size: 15px ! important;
   background-color: #ccc;
   color: #222;
-  border: none;
-  border-radius: 3px;
-  padding: 5px;
-  margin: 5px;
+  border: 1px solid #111;
+  border-radius: 4px;
+  margin: 2px 5px;
+  padding: 0;
+  text-shadow:
+    0 0 10px #222;
+  box-shadow:
+    inset 0px 0px 4px 1px #222,
+    0px 0px 5px 0px rgba(200, 200, 200, .4);
 }
 button:hover {
   background-color: #ddd;
-  border: none;
+  border: 1px solid #151515;
   color: #333;
+  text-shadow:
+    0 0 10px #333;
+  box-shadow:
+    inset 0px 0px 4px 1px #333,
+    0px 0px 5px 0px rgba(200, 200, 200, .4);
+}
+button:focus {
+  outline: none;
 }
 
 /******************************************************************************
  * Program Design View
  ******************************************************************************/
 
+/* includes the top button div */
+div.program-view {
+  height: 100%;
+}
+
+/* below the top button div */
+div.container {
+  width: 100%;
+  height: calc(100% - 30px);
+}
+
 table.program {
+  margin: 0 auto;
+  margin-top: 10px;
+
   font: 100% sans-serif;
   border-collapse: collapse;
   empty-cells: show;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 table.program td {
   text-align: center;
   padding: .3em;
   border: 1px solid #555;
-  width: 20px;
-  height: 15px;
+  width: 35px;
+  height: 30px;
 }
 
 table.program td.symbol-blue {
   box-shadow:
-    inset 0px 0px 6px 5px rgba(0, 0, 0, 0.5),
+    inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
     0px 0px 7px 3px rgba(0, 0, 200, 0.3);
+}
+table.program td.symbol-blue:hover {
+  box-shadow:
+    inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
+    0px 0px 10px 4px rgba(0, 0, 200, 0.5);
 }
 table.program td.symbol-red {
   box-shadow:
-    inset 0px 0px 6px 5px rgba(0, 0, 0, 0.5),
+    inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
     0px 0px 7px 3px rgba(200, 0, 0, 0.3);
+}
+table.program td.symbol-red:hover {
+  box-shadow:
+    inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
+    0px 0px 10px 4px rgba(200, 0, 0, 0.5);
 }
 
 table.program td.spacer {
   border: none;
   padding: 0;
-  width: 10px;
+  width: 5px;
+  height: 5px;
 }
 
 /******************************************************************************
  * Turing Machine View
  ******************************************************************************/
+
+/* includes the top button div */
+div.machine-view {
+  height: 100%;
+}
+
+div.machine-view div.container {
+  overflow: hidden;
+}
 
 .cpu, .cpu * {
   position: absolute;
@@ -93,7 +159,7 @@ table.program td.spacer {
 
 .head {
   position: absolute;
-  top: 50%;
+  top: calc(50% + 15px);
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 
@@ -113,8 +179,8 @@ table.program td.spacer {
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 
-  width: calc(6 * 60px);
-  height: 58px;
+  width: calc(6 * 58px);
+  height: 56px;
 
   overflow: hidden;
   border-left: 1px solid black;
@@ -127,18 +193,19 @@ table.program td.spacer {
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
-
-  width: calc(9 * 60px);
-  height: 50px;
+  width: calc(9 * 58px);
+  height: 48px;
 }
 
 .cell-blue {
-  box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.2),
-    inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7),
-    0px 0px 4px 2px rgba(0, 0, 200, 0.3);
+  box-shadow:
+    1px 1px 3px 0 rgba(0, 0, 0, 0.2),
+    0px 0px 4px 2px rgba(0, 0, 200, 0.3),
+    inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7);
 }
 .cell-red {
-  box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.2),
-    inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7),
-    0px 0px 4px 2px rgba(200, 0, 0, 0.3);
+  box-shadow:
+    1px 1px 3px 0 rgba(0, 0, 0, 0.2),
+    0px 0px 4px 2px rgba(200, 0, 0, 0.3),
+    inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7);
 }

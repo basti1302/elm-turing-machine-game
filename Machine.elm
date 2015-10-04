@@ -1,4 +1,10 @@
-module Machine (Model, init, predictNextStep, Action(ExecuteStep), update, view) where
+module Machine
+  ( Model
+  , init
+  , predictNextStep
+  , Action(ExecuteStep)
+  , update
+  , view) where
 
 import Array
 import Debug
@@ -175,5 +181,5 @@ view renderPhase machine =
     , Html.div [ Html.Attributes.class "head" ] []
     , Html.div
         [ Html.Attributes.class "tape-viewport" ]
-        [Tape.view renderPhase machine.head machine.tape]
+        [ Tape.view renderPhase machine.head machine.tape ]
     ]

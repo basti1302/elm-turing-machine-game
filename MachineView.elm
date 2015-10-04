@@ -64,12 +64,20 @@ update action (machine, renderPhase)  =
       True -> (machine, RenderPhase.Init)
 
 
-view : Signal.Address Action -> Model -> List Html.Html
+view : Signal.Address Action -> Model -> Html.Html
 view address (machine, renderPhase)  =
-  List.append
-    (Machine.view renderPhase machine)
-    [ Html.button
+  let
+    btnProgram = Html.button
       [ Html.Events.onClick address SwitchToProgram
       , Html.Attributes.class "fa fa-cog" ]
       []
-    ]
+  in
+    Html.div
+      [ Html.Attributes.class "machine-view" ]
+      [ Html.div
+        [ Html.Attributes.class "buttons" ]
+        [ btnProgram ],
+        Html.div
+        [ Html.Attributes.class "container" ]
+        (Machine.view renderPhase machine)
+      ]

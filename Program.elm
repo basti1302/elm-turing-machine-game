@@ -119,14 +119,22 @@ view address model =
 
     tableContent = [ Html.tbody [] rows ]
     table = Html.table [ Html.Attributes.class "program" ] tableContent
-    switchView = Html.button
+    btnExecute = Html.button
       [ Html.Events.onClick address SwitchToMachine
       , Html.Attributes.class "fa fa-play" ]
       []
-    reset = Html.button
+    btnReset = Html.button
       [ Html.Events.onClick address Reset
       , Html.Attributes.class "fa fa-refresh" ]
       []
 
   in
-    Html.div [] (table :: [switchView, reset])
+    Html.div
+      [ Html.Attributes.class "program-view" ]
+      [ Html.div
+          [ Html.Attributes.class "buttons" ]
+          [btnExecute, btnReset],
+        Html.div
+        [ Html.Attributes.class "container" ]
+        [ table ]
+      ]
