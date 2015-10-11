@@ -1,4 +1,4 @@
-module Screen where
+module Game.Screen where
 
 type Screen = Machine | Program
 

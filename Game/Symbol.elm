@@ -1,4 +1,4 @@
-module Symbol where
+module Game.Symbol where
 
 type Symbol = Empty | A | B | C | D | E | F | G
 

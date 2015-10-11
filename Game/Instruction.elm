@@ -1,4 +1,4 @@
-module Instruction
+module Game.Instruction
   ( Input
   , Output
   , Model
@@ -19,9 +19,9 @@ import Html
 import Html.Attributes
 import Html.Events
 
-import Move exposing (Move)
-import Symbol exposing (Symbol)
-import State exposing (State)
+import Game.Move as Move exposing (Move)
+import Game.Symbol as Symbol exposing (Symbol)
+import Game.State as State exposing (State)
 
 
 type alias Input =

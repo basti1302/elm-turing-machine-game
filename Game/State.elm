@@ -1,4 +1,4 @@
-module State where
+module Game.State where
 
 type State = HALT | A | B | C | D | E | F | G
 

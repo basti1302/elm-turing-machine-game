@@ -1,13 +1,13 @@
-module Tape (Model, init, read, Action(Write, Extend), update, view) where
+module Game.Tape (Model, init, read, Action(Write, Extend), update, view) where
 
 import Array
 import Debug
 import Html
 import Html.Attributes
 
-import Cell
-import RenderPhase exposing (RenderPhase)
-import Symbol exposing (Symbol)
+import Game.Cell as Cell
+import Game.RenderPhase as RenderPhase exposing (RenderPhase)
+import Game.Symbol as Symbol exposing (Symbol)
 
 
 type alias Model = Array.Array Cell.Model

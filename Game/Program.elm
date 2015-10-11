@@ -1,4 +1,4 @@
-module Program
+module Game.Program
   ( Model
   , init
   , Action(SwitchToMachine)
@@ -11,9 +11,9 @@ import Html
 import Html.Attributes
 import Html.Events
 
-import Instruction
-import State exposing (State)
-import Symbol exposing (Symbol)
+import Game.Instruction as Instruction
+import Game.State as State exposing (State)
+import Game.Symbol as Symbol exposing (Symbol)
 
 
 -- A Dict Instruction.Input Instrution.Output

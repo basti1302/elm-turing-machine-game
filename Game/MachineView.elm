@@ -1,4 +1,4 @@
-module MachineView
+module Game.MachineView
   ( Model
   , init
   , initWithProgram
@@ -11,9 +11,9 @@ import Html
 import Html.Attributes
 import Html.Events
 
-import Machine
-import Program
-import RenderPhase exposing (RenderPhase)
+import Game.Machine as Machine
+import Game.Program as Program
+import Game.RenderPhase as RenderPhase exposing (RenderPhase)
 
 
 -- TODO Maybe the RenderPhase should be an Action instead?? Or context? It

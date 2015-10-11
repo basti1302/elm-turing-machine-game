@@ -1,3 +1,3 @@
-module Move where
+module Game.Move where
 
 type Move = Left | Right

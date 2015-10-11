@@ -1,13 +1,13 @@
-module Game (main) where
+module Main (main) where
 
 import Html
 import Html.Attributes
 import Signal exposing (Signal, (<~), (~))
 import Time exposing (every, millisecond)
 
-import MachineView
-import Program
-import Screen exposing (Screen)
+import Game.MachineView as MachineView
+import Game.Program as Program
+import Game.Screen as Screen exposing (Screen)
 
 
 type alias Model =

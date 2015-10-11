@@ -1,4 +1,4 @@
-module Machine
+module Game.Machine
   ( Model
   , init
   , predictNextStep
@@ -11,13 +11,13 @@ import Debug
 import Html
 import Html.Attributes
 
-import Cell exposing (..)
-import Move exposing (Move)
-import Program
-import RenderPhase exposing (RenderPhase)
-import Symbol exposing (Symbol)
-import State exposing (..)
-import Tape
+import Game.Cell as Cell
+import Game.Move as Move exposing (Move)
+import Game.Program as Program
+import Game.RenderPhase as RenderPhase exposing (RenderPhase)
+import Game.Symbol as Symbol exposing (Symbol)
+import Game.State as State exposing (State)
+import Game.Tape as Tape
 
 
 -- TODO Currently ignored
@@ -31,11 +31,11 @@ symbols = List.append inputSymbols [ Symbol.blank ]
 
 
 initialState : State
-initialState = A
+initialState = State.A
 
 
 acceptingStates : List State
-acceptingStates = [ HALT ]
+acceptingStates = [ State.HALT ]
 
 
 type alias Model  =

@@ -4,8 +4,8 @@ import ElmTest.Test exposing  (..)
 import ElmTest.Assertion exposing (..)
 import ElmTest.Runner.Element exposing (..)
 
-import Symbol exposing (..)
-import Cell
+import Game.Symbol as Symbol exposing (..)
+import Game.Cell as Cell
 
 tests = suite "Cell"
         [ testBlank

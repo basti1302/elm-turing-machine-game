@@ -1,11 +1,12 @@
-module Cell (Model, fromSymbol, blank, Action(Write), update, view) where
+module Game.Cell (Model, fromSymbol, blank, Action(Write), update, view) where
 
 import Html
 import Html.Attributes
 
-import Move exposing (Move)
-import RenderPhase exposing (RenderPhase)
-import Symbol exposing (Symbol)
+import Game.Move as Move exposing (Move)
+import Game.RenderPhase as RenderPhase exposing (RenderPhase)
+import Game.Symbol as Symbol exposing (Symbol)
+
 
 type alias Model = { symbol : Symbol }
 

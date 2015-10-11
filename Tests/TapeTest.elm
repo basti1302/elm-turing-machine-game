@@ -6,9 +6,9 @@ import ElmTest.Runner.Element exposing (..)
 
 import Array exposing (..)
 
-import Symbol exposing (..)
-import Cell exposing (..)
-import Tape
+import Game.Symbol as Symbol exposing (..)
+import Game.Cell as Cell exposing (..)
+import Game.Tape as Tape
 
 tests = suite "Tape"
         [ testExtendNotNecessaryLeft
