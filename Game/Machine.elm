@@ -6,7 +6,6 @@ module Game.Machine
   , update
   , view) where
 
-import Array
 import Debug
 import Html
 import Html.Attributes
@@ -47,10 +46,10 @@ type alias Model  =
   }
 
 
-init : Program.Model -> Model
-init program =
+init : Tape.Model -> Program.Model -> Model
+init tape program =
   { state = initialState
-  , tape = Array.fromList [ Cell.blank ]
+  , tape = tape
   , head = 0
   , program = program
   , stopped = False

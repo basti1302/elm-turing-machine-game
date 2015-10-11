@@ -1,4 +1,11 @@
-module Game.Cell (Model, fromSymbol, blank, Action(Write), update, view) where
+module Game.Cell
+  (Model
+  , fromSymbol
+  , blank
+  , Action(Write)
+  , update
+  , view)
+  where
 
 import Html
 import Html.Attributes

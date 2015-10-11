@@ -9,6 +9,7 @@ import Tests.TapeTest
 
 all = suite "All Tests"
   [ Tests.CellTest.tests
+  , Tests.PuzzleTest.tests
   , Tests.TapeTest.tests
   ]
 

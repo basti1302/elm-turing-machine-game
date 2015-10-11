@@ -1,7 +1,7 @@
 module Game.MachineView
   ( Model
+  , initEmpty
   , init
-  , initWithProgram
   , Action(ExecuteMachineStep, SwitchToProgram)
   , update
   , view
@@ -13,7 +13,9 @@ import Html.Events
 
 import Game.Machine as Machine
 import Game.Program as Program
+import Game.Puzzle as Puzzle
 import Game.RenderPhase as RenderPhase exposing (RenderPhase)
+import Game.Tape as Tape
 
 
 -- TODO Maybe the RenderPhase should be an Action instead?? Or context? It
@@ -24,12 +26,12 @@ type alias Model = (Machine.Model, RenderPhase)
 type Action = ExecuteMachineStep | SwitchToProgram
 
 
-init : Model
-init = (Machine.init Program.init, RenderPhase.Init)
+initEmpty : Model
+initEmpty = (Machine.init Tape.init Program.init, RenderPhase.Init)
 
 
-initWithProgram : Program.Model -> Model
-initWithProgram program = (Machine.init program, RenderPhase.Init)
+init : Puzzle.Model -> Program.Model -> Model
+init puzzle program = (Machine.init puzzle.input program, RenderPhase.Init)
 
 
 {-|

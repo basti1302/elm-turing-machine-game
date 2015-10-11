@@ -7,16 +7,22 @@ import Time exposing (every, millisecond)
 
 import Game.MachineView as MachineView
 import Game.Program as Program
+import Game.Puzzle as Puzzle
+import Game.Puzzles as Puzzles
 import Game.Screen as Screen exposing (Screen)
 
 
 type alias Model =
   { machineView : MachineView.Model
   , program : Program.Model
+  , puzzle : Puzzle.Model
   }
 
 
-type alias Context = { view : Screen }
+type alias Context =
+  { view : Screen
+  , hasWon : Bool
+  }
 
 
 type Action
@@ -29,9 +35,13 @@ Initializes the model and the context.
 -}
 init : (Model, Context)
 init =
-  ({ machineView = MachineView.init
+  ({ machineView = MachineView.initEmpty
    , program = Program.init
-   }, { view = Screen.Program })
+   , puzzle = Puzzles.one
+   },
+   { view = Screen.Program
+   , hasWon = False
+   })
 
 
 {-|
@@ -39,7 +49,9 @@ Updates the current view on each signal tick.
 -}
 update : Action -> (Model, Context) -> (Model, Context)
 update action (game, context) =
+
   case action of
+
     MachineAction machineAction ->
       if context.view /= Screen.Machine
         then (game, context) -- do not run machine program if not in machine view
@@ -50,8 +62,13 @@ update action (game, context) =
             otherwise ->
               let
                 (machine', renderPhase') = MachineView.update machineAction game.machineView
+                hasWon' =
+                  machine'.stopped &&
+                  Puzzle.isSolved machine'.tape game.puzzle
               in
-                ({ game | machineView <- (machine', renderPhase') }, context)
+                ({ game | machineView <- (machine', renderPhase') },
+                 { context | hasWon <- hasWon' })
+
     ProgramAction programAction ->
       if context.view /= Screen.Program
         then (game, context) -- do not execute program actions if not in program view
@@ -60,7 +77,7 @@ update action (game, context) =
             Program.SwitchToMachine ->
               ({game |
                    machineView <-
-                   MachineView.initWithProgram game.program
+                   MachineView.init game.puzzle game.program
                }
               , { context | view <- Screen.Machine })
             otherwise ->
@@ -76,11 +93,13 @@ Renders the game view.
 view : Signal.Address Action -> (Model, Context) -> Html.Html
 view address (game, context) =
   let content =
-    case context.view of
-      Screen.Program ->
-        [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
-      Screen.Machine ->
-        [ MachineView.view (Signal.forwardTo address MachineAction) game.machineView ]
+    if context.hasWon then [ Html.text "YOU WON!" ]
+    else
+      case context.view of
+        Screen.Program ->
+          [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
+        Screen.Machine ->
+          [ MachineView.view (Signal.forwardTo address MachineAction) game.machineView ]
   in
     Html.div
       [ Html.Attributes.class "game" ]

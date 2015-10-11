@@ -20,6 +20,8 @@ tests = suite "Tape"
         , testReadFail
         , testWrite
         -- , testWriteFail
+        , testTrim
+        , testTrimNoChange
         ]
 
 testExtendNotNecessaryLeft =
@@ -46,7 +48,7 @@ testExtendNotNecessaryRight =
 testExtendLeft =
   test "extend left" (
     assertEqual
-      (Array.fromList
+      (Tape.fromList
         [ Cell.blank
         , Cell.fromSymbol Symbol.A
         , Cell.fromSymbol Symbol.B
@@ -58,7 +60,7 @@ testExtendLeft =
 testExtendRight =
   test "extend right" (
     assertEqual
-      (Array.fromList
+      (Tape.fromList
         [ Cell.fromSymbol Symbol.A
         , Cell.fromSymbol Symbol.B
         , Cell.fromSymbol Symbol.C
@@ -84,7 +86,7 @@ testReadFail =
 testWrite =
   test "write" (
     assertEqual
-      (Array.fromList
+      (Tape.fromList
         [ Cell.fromSymbol Symbol.A
         , Cell.fromSymbol Symbol.B
         , Cell.fromSymbol Symbol.A
@@ -93,10 +95,11 @@ testWrite =
   )
 
 {-
+TODO Make write return a Result, then this test makes sense.
 testWriteFail =
   test "write fail" (
     assertEqual
-      (Array.fromList
+      (Tape.fromList
         [ Cell.fromSymbol Symbol.A
         , Cell.fromSymbol Symbol.B
         , Cell.fromSymbol Symbol.A
@@ -105,8 +108,49 @@ testWriteFail =
   )
 -}
 
+testTrim =
+  test "trim" (
+    assertEqual
+      (Tape.fromList
+        [ Cell.fromSymbol Symbol.B
+        , Cell.fromSymbol Symbol.A
+        , Cell.blank
+        , Cell.fromSymbol Symbol.B
+        ])
+      (Tape.trim <|
+       Tape.fromList
+        [ Cell.blank
+        , Cell.blank
+        , Cell.fromSymbol Symbol.B
+        , Cell.fromSymbol Symbol.A
+        , Cell.blank
+        , Cell.fromSymbol Symbol.B
+        , Cell.blank
+        , Cell.blank
+        , Cell.blank
+        ])
+  )
+
+testTrimNoChange =
+  test "trim without change" (
+    assertEqual
+      (Tape.fromList
+        [ Cell.fromSymbol Symbol.B
+        , Cell.fromSymbol Symbol.A
+        , Cell.blank
+        , Cell.fromSymbol Symbol.B
+        ])
+      (Tape.trim <|
+       Tape.fromList
+        [ Cell.fromSymbol Symbol.B
+        , Cell.fromSymbol Symbol.A
+        , Cell.blank
+        , Cell.fromSymbol Symbol.B
+        ])
+  )
+
 initialTape : Tape.Model
-initialTape = Array.fromList
+initialTape = Tape.fromList
   [ Cell.fromSymbol Symbol.A
   , Cell.fromSymbol Symbol.B
   , Cell.fromSymbol Symbol.C

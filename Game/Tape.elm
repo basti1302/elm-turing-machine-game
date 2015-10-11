@@ -1,4 +1,13 @@
-module Game.Tape (Model, init, read, Action(Write, Extend), update, view) where
+module Game.Tape
+  ( Model
+  , init
+  , fromList
+  , read
+  , Action(Write, Extend)
+  , trim
+  , update
+  , view)
+  where
 
 import Array
 import Debug
@@ -20,6 +29,11 @@ init : Model
 init = Array.fromList []
 
 
+fromList : List Cell.Model -> Model
+fromList list =
+  Array.fromList list
+
+
 type Action = Write Int Cell.Action | Extend Int
 
 
@@ -35,13 +49,29 @@ update action model =
 
 {-|
 Extends the tape, if necessary, that is, if the given position is outside the
-current valid range of tape indices.
+current valid range of tape indices. A blank cell is appended.
 -}
 extend : Int -> Model -> Model
 extend position model =
   if | position == -1 -> Array.append (Array.fromList [Cell.blank]) model
      | position >= Array.length model -> Array.push (Cell.blank) model
      | otherwise -> model
+
+
+{-|
+Returns a copy of the tape with leading and trailing blank cells removed.
+-}
+trim : Model -> Model
+trim tape =
+  let
+    f1 (idx, cell) nonBlank =
+      if nonBlank < 0 && cell.symbol /= Symbol.Empty
+         then idx
+         else nonBlank
+    indexed = Array.toIndexedList tape
+    firstNonBlankIndex = List.foldl f1 -1 indexed
+    lastNonBlankIndex = (List.foldr f1 -1 indexed) + 1
+  in Array.slice firstNonBlankIndex lastNonBlankIndex tape
 
 
 {-|
