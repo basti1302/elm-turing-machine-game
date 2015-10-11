@@ -1,3 +1,5 @@
+module Tests.TapeTest (tests, main) where
+
 import ElmTest.Test exposing  (..)
 import ElmTest.Assertion exposing (..)
 import ElmTest.Runner.Element exposing (..)
