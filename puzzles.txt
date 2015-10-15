@@ -1,0 +1,96 @@
+Find And Erase
+==============
+Move to the right until you find the red cell, then erase it and halt.
+
+01 -> 00
+0001 -> 0000
+0000001 -> 0000000
+
+Solution
+---------
+0,A  -> 0,A,R
+1,A  -> 0,H,-
+
+
+Fill Until
+==========
+Move to the right and make all cells red while you move, until you find the first cell that had been red all along. Then halt.
+
+01 -> 11
+0001 -> 1111
+0000001 -> 1111111
+
+Solution
+---------
+0,A  -> 0,A,R
+1,A  -> 0,H,-
+
+
+Append One
+==========
+Given: A sequence of red cells. Append a red cell after the end of the sequence (that is, make the string of red cells one cell longer).
+
+0 -> 1
+1 -> 11
+11 -> 111
+...
+
+Solution
+---------
+1,A  -> 1,A,R
+0,A  -> 1,H,R
+
+
+Append 2
+========
+Given: A sequence of red cells. Append two red cells after the end of the sequence (that is, make the string of red cells two cell longer).
+
+0 -> 11
+1 -> 111
+11 -> 1111
+...
+
+Solution
+--------
+1,A  -> 1,A,R
+0,A  -> 1,B,R
+0,B  -> 1,H,R
+1,B  -> 1,B,R
+
+
+Fill In Both Directions
+==========
+Given: You will start in the middle between one red cell to the left and one red cell to the right. Fill the space between those cells completely with red cells. Don't turn cells outside this area red.
+
+101 -> 111
+ ^
+1001 -> 1111
+  ^
+10000001 -> 11111111
+   ^
+
+Solution
+---------
+0,A  -> 1,A,R
+1,A  -> 1,B,L
+1,B  -> 1,B,L
+0,B  -> 0,H,-
+
+
+Erase Every Other
+=================
+Given a string of red cells, erase every other one. Leave the first red cell as red, erase the second, keep the third, erase the fourth, ... Halt when you see two consecutive red cells.
+1      -> 1
+11     -> 1
+111    -> 101
+1111   -> 101
+11111  -> 10101
+111111 -> 10101
+
+Solution
+--------
+
+1,A -> 1,B,R
+1,B -> 0,A,R
+0,A -> 0,H,-
+0,B -> 0,H,-

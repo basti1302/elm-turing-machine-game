@@ -37,7 +37,7 @@ init : (Model, Context)
 init =
   ({ machineView = MachineView.initEmpty
    , program = Program.init
-   , puzzle = Puzzles.one
+   , puzzle = Puzzles.fillUntil
    },
    { view = Screen.Program
    , hasWon = False

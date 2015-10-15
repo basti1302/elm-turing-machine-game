@@ -7,17 +7,22 @@ module Game.Puzzle
 
 import Game.Tape as Tape
 
+
 type alias Model =
-  { input : Tape.Model
+  { title : String
+  , description : String
+  , input : Tape.Model
   , result : Tape.Model
   -- , Tape Alphabet?
   -- , Set of possible states (as subset from Game.State)?
   }
 
 
-init : Tape.Model -> Tape.Model -> Model
-init input result =
-  { input = input
+init : String -> String -> Tape.Model -> Tape.Model -> Model
+init title description input result =
+  { title = title
+  , description = description
+  , input = input
   , result = result
   }
 
