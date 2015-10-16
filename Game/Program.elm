@@ -10,8 +10,10 @@ module Game.Program
 import Html
 import Html.Attributes
 import Html.Events
+import List.Extra
 
 import Game.Instruction as Instruction
+import Game.Puzzle as Puzzle
 import Game.State as State exposing (State)
 import Game.Symbol as Symbol exposing (Symbol)
 
@@ -20,7 +22,10 @@ import Game.Symbol as Symbol exposing (Symbol)
 -- would be much nicer but user defined types are not comparable, nor
 -- are tuples of user defined types. See
 -- https://github.com/elm-lang/elm-compiler/issues/774 and
-type alias Model = List Instruction.Model
+type alias Model =
+  { program : List Instruction.Model
+  , puzzle : Puzzle.Model
+  }
 
 
 type Action =
@@ -30,15 +35,22 @@ type Action =
   | Modify Instruction.Input Instruction.Action
 
 
-init : Model
-init =
-  [ Instruction.fromInput State.A Symbol.Empty
-  , Instruction.fromInput State.B Symbol.Empty
-  , Instruction.fromInput State.C Symbol.Empty
-  , Instruction.fromInput State.A Symbol.A
-  , Instruction.fromInput State.B Symbol.A
-  , Instruction.fromInput State.C Symbol.A
-  ]
+
+
+init : Puzzle.Model -> Model
+init puzzle =
+  let
+    inputStates = List.filter (\ s -> s /= State.HALT ) puzzle.states
+    tapeAlphabet = puzzle.tapeAlphabet
+    cartesianProduct = List.Extra.lift2 (,) inputStates tapeAlphabet
+    createInstruction =
+      (\ (state, symbol) -> Instruction.fromInput state symbol )
+    program =
+      List.map createInstruction cartesianProduct
+  in
+    { program = program
+    , puzzle = puzzle
+    }
 
 
 {-|
@@ -47,7 +59,7 @@ input state and input symbol.
 -}
 -- TODO Replace Maybe type be Result
 execute : (State, Symbol) -> Model -> Maybe Instruction.Model
-execute (state, symbol) program =
+execute (state, symbol) { program } =
   let
     candidates = List.filter
       (\ instruction ->
@@ -63,7 +75,7 @@ execute (state, symbol) program =
 update : Action -> Model -> Model
 update action model =
   case action of
-    Reset -> init
+    Reset -> init model.puzzle
     Modify rowId rowAction ->
       let updateRow instruction =
         if (rowId.symbol == instruction.input.symbol &&
@@ -71,7 +83,7 @@ update action model =
           then Instruction.update rowAction instruction
           else instruction
       in
-        List.map updateRow model
+        { model | program <- (List.map updateRow model.program) }
 
 
 convertSignal : Signal.Address Action -> Instruction.Model -> Signal.Address Instruction.Action
@@ -88,27 +100,29 @@ viewWithInput address renderFunction instruction =
 
 
 view : Signal.Address Action -> Model -> Html.Html
-view address model =
+view address { program, puzzle } =
   let
-    tdsInputSymbols = List.map Instruction.viewInputSymbol model
+    tdsInputSymbols = List.map Instruction.viewInputSymbol program
     tdsInputSymbolsWithHeader =
       (Html.td [ Html.Attributes.rowspan 2 ] [ Html.text "In" ])
       :: tdsInputSymbols
     rowInputSymbols = Html.tr [] tdsInputSymbolsWithHeader
-    rowInputStates = Html.tr [] <| List.map Instruction.viewInputState model
+    rowInputStates = Html.tr [] <| List.map Instruction.viewInputState program
 
-    rowSpacers = Html.tr [] <| List.repeat (List.length model) Instruction.spacer
+    rowSpacers = Html.tr [] <| List.repeat (List.length program) Instruction.spacer
 
+    renderOutputSymbol = Instruction.viewOutputSymbol puzzle.tapeAlphabet
     tdsOutputSymbols =
-      List.map (viewWithInput address Instruction.viewOutputSymbol) model
+      List.map (viewWithInput address renderOutputSymbol) program
     tdsOutputSymbolsWithHeader =
       (Html.td [ Html.Attributes.rowspan 3 ] [ Html.text "Out" ])
       :: tdsOutputSymbols
     rowOutputSymbols = Html.tr [] tdsOutputSymbolsWithHeader
+    renderOutputState = Instruction.viewOutputState puzzle.states
     rowOutputStates = Html.tr [] <|
-      List.map (viewWithInput address Instruction.viewOutputState) model
+      List.map (viewWithInput address renderOutputState) program
     rowMoves = Html.tr [] <|
-      List.map (viewWithInput address Instruction.viewMove) model
+      List.map (viewWithInput address Instruction.viewMove) program
     rows =
        [ rowInputSymbols
        , rowInputStates

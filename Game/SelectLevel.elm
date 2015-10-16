@@ -14,17 +14,11 @@ import Game.Puzzle as Puzzle
 import Game.Puzzles as Puzzles
 
 
-type alias Model =
-  { puzzle : Puzzle.Model
-  , puzzles : Puzzles.Model
-  }
+type alias Model = Puzzles.Model
 
 
 init : Model
-init =
-  { puzzle = Puzzles.fillUntil
-  , puzzles = Puzzles.init
-  }
+init = Puzzles.init
 
 
 type Action = Select Puzzle.Model
@@ -47,7 +41,7 @@ viewPuzzle address puzzle =
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
   let
-    levels = List.map (viewPuzzle address) model.puzzles
+    levels = List.map (viewPuzzle address) model
   in
     Html.div
       [ Html.Attributes.class "levelSelection" ]

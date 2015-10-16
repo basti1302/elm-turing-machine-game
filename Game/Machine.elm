@@ -19,16 +19,6 @@ import Game.State as State exposing (State)
 import Game.Tape as Tape
 
 
--- TODO Currently ignored
-inputSymbols : List Symbol
-inputSymbols = [ Symbol.A ]
-
-
--- TODO Currently ignored
-symbols : List Symbol
-symbols = List.append inputSymbols [ Symbol.blank ]
-
-
 initialState : State
 initialState = State.A
 

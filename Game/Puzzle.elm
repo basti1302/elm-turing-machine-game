@@ -1,6 +1,7 @@
 module Game.Puzzle
   ( Model
   , init
+  , initSimple
   , isSolved
   , view
   )
@@ -9,22 +10,59 @@ module Game.Puzzle
 import Html
 import Html.Attributes
 
+import Game.Symbol as Symbol exposing (Symbol)
+import Game.State as State exposing (State)
 import Game.Tape as Tape
+
 
 type alias Model =
   { title : String
   , description : String
+  , tapeAlphabet : List Symbol -- tape symbols, excluding blank
+  , states : List State
   , input : Tape.Model
   , result : Tape.Model
-  -- , Tape Alphabet?
-  -- , Set of possible states (as subset from Game.State)?
   }
 
 
-init : String -> String -> Tape.Model -> Tape.Model -> Model
-init title description input result =
+{-|
+Initializes a puzzle with only one input symbol (red) and two states (A and HALT).
+-}
+initSimple :
+  String ->
+  String ->
+  Tape.Model ->
+  Tape.Model ->
+  Model
+initSimple title description input result =
   { title = title
   , description = description
+  , tapeAlphabet = [ Symbol.Empty, Symbol.A ]
+  , states = [ State.A, State.HALT ]
+  , input = input
+  , result = result
+  }
+
+
+{-|
+Initializes a puzzle.
+
+The blank symbol is automatically added to the tape alphabet, do not include it
+in the inputAlphabet. The HALT state is also added to the set of states.
+-}
+init :
+  String ->
+  String ->
+  List Symbol ->
+  List State ->
+  Tape.Model ->
+  Tape.Model ->
+  Model
+init title description inputAlphabet states input result =
+  { title = title
+  , description = description
+  , tapeAlphabet = Symbol.Empty :: inputAlphabet
+  , states = states ++ [ State.HALT ]
   , input = input
   , result = result
   }

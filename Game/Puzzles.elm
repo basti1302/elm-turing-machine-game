@@ -2,6 +2,7 @@ module Game.Puzzles where
 
 import Game.Cell as Cell
 import Game.Puzzle as Puzzle
+import Game.State as State exposing (State)
 import Game.Symbol as Symbol exposing (Symbol)
 import Game.Tape as Tape
 
@@ -15,7 +16,12 @@ type alias Model = List Puzzle.Model
 
 init : Model
 init =
-  [ findAndErase, fillUntil ] --, a, b, c ]
+  [ findAndErase, fillUntil, appendTwo ]
+
+
+default : Puzzle.Model
+default =
+  Puzzle.initSimple "" "" (Tape.fromList []) (Tape.fromList [])
 
 
 findAndErase : Puzzle.Model
@@ -29,7 +35,7 @@ findAndErase =
       ]
     result = Tape.fromList []
   in
-    Puzzle.init
+    Puzzle.initSimple
       "Find and Erase"
       "Move to the right until you find the red cell, then erase it and halt."
       input
@@ -54,34 +60,34 @@ fillUntil =
       , (Cell.fromSymbol Symbol.A)
       ]
   in
-    Puzzle.init
+    Puzzle.initSimple
       "Fill Until"
       "Move to the right and make all cells red while you move, until you find the first red cell, then halt."
       input
       result
 
 
-{-
-a : Puzzle.Model
-a = Puzzle.init
-      "Lorem Ipsum"
-      "Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur."
-      (Tape.fromList [])
-      (Tape.fromList [])
-
-
-b : Puzzle.Model
-b = Puzzle.init
-  "Lorem Ipsum"
-  "Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur."
-  (Tape.fromList [])
-  (Tape.fromList [])
-
-
-c : Puzzle.Model
-c = Puzzle.init
-  "Lorem Ipsum"
-  "Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur."
-  (Tape.fromList [])
-  (Tape.fromList [])
--}
+appendTwo : Puzzle.Model
+appendTwo =
+  let
+    input = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+    result = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+  in
+    Puzzle.init
+      "Append Two"
+      "Given a sequence of red cells, append two red cells after the end of the sequence (that is, make the string of red cells two cells longer).
+"
+      [ Symbol.A ]
+      [ State.A, State.B ]
+      input
+      result

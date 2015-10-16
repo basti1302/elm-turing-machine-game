@@ -39,14 +39,13 @@ Initializes the model and the context.
 init : (Model, Context)
 init =
   ({ machineView = MachineView.initEmpty
-   , program = Program.init
-   , puzzle = Puzzles.fillUntil
+   , program = Program.init Puzzles.default
+   , puzzle = Puzzles.default
    , selectLevel = SelectLevel.init
    },
    { view = Screen.SelectLevel
    , hasWon = False
    })
-
 
 
 {-|
@@ -73,7 +72,10 @@ updateSelectLevel : SelectLevel.Action -> (Model, Context) -> (Model, Context)
 updateSelectLevel selectLevelAction (game, context) =
   case selectLevelAction of
     SelectLevel.Select puzzle ->
-      ({ game | puzzle <- puzzle },
+      ({ game |
+           puzzle <- puzzle,
+           program <- Program.init puzzle
+       },
        { context | view <- Screen.Program })
     otherwise ->
       (game, context)

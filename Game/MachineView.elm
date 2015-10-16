@@ -14,6 +14,7 @@ import Html.Events
 import Game.Machine as Machine
 import Game.Program as Program
 import Game.Puzzle as Puzzle
+import Game.Puzzles as Puzzles
 import Game.RenderPhase as RenderPhase exposing (RenderPhase)
 import Game.Tape as Tape
 
@@ -31,7 +32,7 @@ type Action =
 
 
 initEmpty : Model
-initEmpty = (Machine.init Tape.init Program.init, RenderPhase.Init)
+initEmpty = (Machine.init Tape.init <| Program.init Puzzles.default, RenderPhase.Init)
 
 
 init : Puzzle.Model -> Program.Model -> Model
@@ -75,7 +76,7 @@ view address (machine, renderPhase)  =
   let
     btnProgram = Html.button
       [ Html.Events.onClick address SwitchToProgram
-      , Html.Attributes.class "fa fa-cog" ]
+      , Html.Attributes.class "fa fa-wrench" ]
       []
     btnLevelSelect = Html.button
       [ Html.Events.onClick address SwitchToLevelSelect
