@@ -24,6 +24,7 @@ type alias Model =
 type alias Context =
   { view : Screen
   , hasWon : Bool
+  , hasLost : Bool
   }
 
 
@@ -45,6 +46,7 @@ init =
    },
    { view = Screen.SelectLevel
    , hasWon = False
+   , hasLost = False
    })
 
 
@@ -94,9 +96,13 @@ updateMachine machineAction (game, context) =
         hasWon' =
           machine'.stopped &&
           Puzzle.isSolved machine'.tape game.puzzle
+        hasLost' =
+          machine'.stopped &&
+          not (Puzzle.isSolved machine'.tape game.puzzle)
       in
         ({ game | machineView <- (machine', renderPhase') },
-         { context | hasWon <- hasWon' })
+         { context | hasWon <- hasWon'
+                   , hasLost <- hasLost' })
 
 
 updateProgram : Program.Action -> (Model, Context) -> (Model, Context)
@@ -124,6 +130,7 @@ view : Signal.Address Action -> (Model, Context) -> Html.Html
 view address (game, context) =
   let content =
     if context.hasWon then [ Html.text "YOU WON!" ]
+    else if context.hasLost then [ Html.text "nope :-(" ]
     else
       case context.view of
         Screen.SelectLevel ->

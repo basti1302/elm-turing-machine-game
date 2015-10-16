@@ -39,36 +39,48 @@ init : Puzzle.Model -> Program.Model -> Model
 init puzzle program = (Machine.init puzzle.input program, RenderPhase.Init)
 
 
+maxSteps : Int
+maxSteps = 25
+
+
 {-|
 Advances the Turing machine view by one renderPhase.
 -}
 update : Action -> Model -> Model
 update action (machine, renderPhase)  =
-  case action of
+  if (machine.stepCount >= maxSteps)
+  then ({ machine | stopped <- True }, RenderPhase.Init)
+  else case action of
     SwitchToProgram -> (machine, renderPhase)
     ExecuteMachineStep -> case machine.stopped of
+      -- do nothing for a TM that is already stopped
+      True  -> (machine, RenderPhase.Init)
       False ->
-        let (nextState, nextSymbol, nextMove) =
-          (Machine.predictNextStep machine)
-        in case renderPhase of
+        let
+          predicted = Machine.predictNextStep machine
+        in case predicted of
+          Result.Err err ->
+            ({ machine | stopped <- True }, RenderPhase.Init)
+          Result.Ok (nextState, nextSymbol, nextMove) ->
+            case renderPhase of
 
-          -- Init -> WriteSymbol (write the next symbol to head's position)
-          RenderPhase.Init -> (machine, RenderPhase.WriteSymbol nextSymbol)
+              -- Init -> WriteSymbol (write the next symbol to head's position)
+              RenderPhase.Init -> (machine, RenderPhase.WriteSymbol nextSymbol)
 
-          -- WriteSymbol -> StartTransition (start animation of tape/head
-          -- according to move direction)
-          RenderPhase.WriteSymbol _ ->
-            (machine, RenderPhase.StartTransition
-              (nextState, nextSymbol, nextMove))
+              -- WriteSymbol -> StartTransition (start animation of tape/head
+              -- according to move direction)
+              RenderPhase.WriteSymbol _ ->
+                (machine, RenderPhase.StartTransition
+                  (nextState, nextSymbol, nextMove))
 
-          -- StartTransition -> CompleteStep (actually update the TM's state)
-          RenderPhase.StartTransition _ ->
-            let machine' = Machine.update Machine.ExecuteStep machine
-            in (machine', RenderPhase.CompleteStep)
+              -- StartTransition -> CompleteStep (actually update the TM's state)
+              RenderPhase.StartTransition _ ->
+                let machine' = Machine.update Machine.ExecuteStep machine
+                in (machine', RenderPhase.CompleteStep)
 
-          -- CompleteStep -> Init (set render phase back to first state)
-          RenderPhase.CompleteStep -> (machine, RenderPhase.Init)
-      True -> (machine, RenderPhase.Init)
+              -- CompleteStep -> Init (set render phase back to first state)
+              RenderPhase.CompleteStep -> (machine, RenderPhase.Init)
+
 
 
 view : Signal.Address Action -> Model -> Html.Html

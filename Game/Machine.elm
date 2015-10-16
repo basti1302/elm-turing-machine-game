@@ -26,12 +26,12 @@ initialState = State.A
 acceptingStates : List State
 acceptingStates = [ State.HALT ]
 
-
 type alias Model  =
   { state : State
   , tape : Tape.Model
   , head : Int
   , program : Program.Model
+  , stepCount : Int
   , stopped : Bool
   }
 
@@ -42,6 +42,7 @@ init tape program =
   , tape = tape
   , head = 0
   , program = program
+  , stepCount = 0
   , stopped = False
   }
 
@@ -50,20 +51,18 @@ init tape program =
 Predicts the next step (the outcome of executing the Turing machine program once
 on the current state of the machine) without actually performing it.
 -}
-predictNextStep : Model -> (State, Symbol, Move)
+predictNextStep : Model -> Result String (State, Symbol, Move)
 predictNextStep machine =
   let
     maybeInstruction = Program.execute (machine.state, read machine) machine.program
   in
     case maybeInstruction of
       Just instruction ->
-        ( instruction.output.state
+        Result.Ok ( instruction.output.state
         , instruction.output.symbol
         , instruction.output.move
         )
-      -- TODO Propagating a Result (containing an error) up in switching the
-      -- machine to "stopped" without abusing the HALT state would be cleaner.
-      Nothing -> (State.HALT, Symbol.blank, Move.Right)
+      Nothing -> Result.Err "no instruction available"
 
 
 {-|
@@ -99,7 +98,9 @@ executeStep machine =
   let
     extendedTape = Tape.update (Tape.Extend machine.head) machine.tape
     head' = fixHeadPosition machine.head
-    machine' = { machine | tape <- extendedTape, head <- head' }
+    machine' = { machine | tape <- extendedTape
+                         , head <- head'
+                         , stepCount <- machine.stepCount + 1 }
     symbol = read machine'
     maybeInstruction = Program.execute (machine'.state, symbol) machine.program
   in
@@ -110,6 +111,7 @@ executeStep machine =
         , instruction.output.move
         ) machine'
       Nothing ->
+        -- TODO Use Result to propagate error up
         let _ = Debug.log "Incomplete Turing machine program for" (machine'.state, symbol)
         in Debug.log "Halting Turing machine at" (transform (State.HALT, Symbol.blank, Move.Right) machine')
 
