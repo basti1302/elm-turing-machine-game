@@ -48,6 +48,28 @@ body {
   transform: translateX(-50%) translateY(-50%);
 }
 
+.welcome {
+  text-align: center;
+}
+
+button.main-menu-button {
+  width: 200px;
+  height: 40px;
+  font-size: 17px ! important;
+}
+
+.head {
+  position: absolute;
+  top: calc(50% + 15px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+
+  width: 58px;
+  height: 62px;
+  border: 2px solid red;
+  z-index: 2;
+}
+
 .levelSelection {
   width: 100%;
   height: 100%;

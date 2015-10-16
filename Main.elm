@@ -11,6 +11,7 @@ import Game.Puzzle as Puzzle
 import Game.Puzzles as Puzzles
 import Game.Screen as Screen exposing (Screen)
 import Game.SelectLevel as SelectLevel
+import Game.Welcome as Welcome
 
 
 type alias Model =
@@ -29,7 +30,8 @@ type alias Context =
 
 
 type Action
-  = SelectLevelAction SelectLevel.Action
+  = WelcomeAction Welcome.Action
+  | SelectLevelAction SelectLevel.Action
   | MachineAction MachineView.Action
   | ProgramAction Program.Action
 
@@ -44,7 +46,7 @@ init =
    , puzzle = Puzzles.default
    , selectLevel = SelectLevel.init
    },
-   { view = Screen.SelectLevel
+   { view = Screen.Welcome
    , hasWon = False
    , hasLost = False
    })
@@ -56,18 +58,35 @@ Updates the current view on each signal tick.
 update : Action -> (Model, Context) -> (Model, Context)
 update action (game, context) =
   case action of
+    WelcomeAction welcomeAction ->
+      if context.view /= Screen.Welcome
+        -- discard welcome screen events if not on welcome screen
+        then (game, context)
+        else updateWelcome welcomeAction (game, context)
     SelectLevelAction selectLevelAction ->
       if context.view /= Screen.SelectLevel
-        then (game, context) -- discard select level events if not in machine view
+        -- discard select level events if not in select level view
+        then (game, context)
         else updateSelectLevel selectLevelAction (game, context)
     MachineAction machineAction ->
       if context.view /= Screen.Machine
-        then (game, context) -- do not run machine program if not in machine view
+        -- do not run machine program if not in machine view
+        then (game, context)
         else updateMachine machineAction (game, context)
     ProgramAction programAction ->
       if context.view /= Screen.Program
-        then (game, context) -- do not execute program actions if not in program view
+        -- do not execute program actions if not in program view
+        then (game, context)
         else updateProgram programAction (game, context)
+
+
+updateWelcome : Welcome.Action -> (Model, Context) -> (Model, Context)
+updateWelcome welcomeAction (game, context) =
+  case welcomeAction of
+    Welcome.Play ->
+      (game, { context | view <- Screen.SelectLevel })
+    otherwise ->
+      (game, context)
 
 
 updateSelectLevel : SelectLevel.Action -> (Model, Context) -> (Model, Context)
@@ -133,6 +152,8 @@ view address (game, context) =
     else if context.hasLost then [ Html.text "nope :-(" ]
     else
       case context.view of
+        Screen.Welcome ->
+          [ Welcome.view (Signal.forwardTo address WelcomeAction) ]
         Screen.SelectLevel ->
           [ SelectLevel.view (Signal.forwardTo address SelectLevelAction) game.selectLevel ]
         Screen.Program ->
