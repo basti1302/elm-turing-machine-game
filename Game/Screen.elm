@@ -1,4 +1,4 @@
 module Game.Screen where
 
-type Screen = Machine | Program
+type Screen = SelectLevel | Machine | Program
 

@@ -6,9 +6,17 @@ import Game.Symbol as Symbol exposing (Symbol)
 import Game.Tape as Tape
 
 
-puzzles : List Puzzle.Model
-puzzles =
-  [findAndErase, fillUntil]
+type alias Model = List Puzzle.Model
+
+
+-- TODO Can't set head into middle of tape :-(
+-- Required for Fill In Both Directions
+
+
+init : Model
+init =
+  [ findAndErase, fillUntil ] --, a, b, c ]
+
 
 findAndErase : Puzzle.Model
 findAndErase =
@@ -38,7 +46,6 @@ fillUntil =
       , (Cell.fromSymbol Symbol.Empty)
       , (Cell.fromSymbol Symbol.A)
       ]
-
     result = Tape.fromList
       [ (Cell.fromSymbol Symbol.A)
       , (Cell.fromSymbol Symbol.A)
@@ -54,5 +61,27 @@ fillUntil =
       result
 
 
--- TODO Can't set head into middle of tape :-(
--- Required for Fill In Both Directions
+{-
+a : Puzzle.Model
+a = Puzzle.init
+      "Lorem Ipsum"
+      "Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur."
+      (Tape.fromList [])
+      (Tape.fromList [])
+
+
+b : Puzzle.Model
+b = Puzzle.init
+  "Lorem Ipsum"
+  "Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur."
+  (Tape.fromList [])
+  (Tape.fromList [])
+
+
+c : Puzzle.Model
+c = Puzzle.init
+  "Lorem Ipsum"
+  "Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur Lorem Ipsum Dolor Sic Amet Consecitur."
+  (Tape.fromList [])
+  (Tape.fromList [])
+-}

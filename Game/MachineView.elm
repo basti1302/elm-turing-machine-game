@@ -2,7 +2,7 @@ module Game.MachineView
   ( Model
   , initEmpty
   , init
-  , Action(ExecuteMachineStep, SwitchToProgram)
+  , Action(ExecuteMachineStep, SwitchToProgram, SwitchToLevelSelect)
   , update
   , view
   ) where
@@ -19,11 +19,15 @@ import Game.Tape as Tape
 
 
 -- TODO Maybe the RenderPhase should be an Action instead?? Or context? It
--- feels wrong to have it in the model.
+-- feels wrong to have it in the model. Could the same be achieved with
+-- evancz/elm-effects
 type alias Model = (Machine.Model, RenderPhase)
 
 
-type Action = ExecuteMachineStep | SwitchToProgram
+type Action =
+    ExecuteMachineStep
+  | SwitchToProgram
+  | SwitchToLevelSelect
 
 
 initEmpty : Model
@@ -37,7 +41,7 @@ init puzzle program = (Machine.init puzzle.input program, RenderPhase.Init)
 {-|
 Advances the Turing machine view by one renderPhase.
 -}
-update: Action -> Model -> Model
+update : Action -> Model -> Model
 update action (machine, renderPhase)  =
   case action of
     SwitchToProgram -> (machine, renderPhase)
@@ -73,12 +77,16 @@ view address (machine, renderPhase)  =
       [ Html.Events.onClick address SwitchToProgram
       , Html.Attributes.class "fa fa-cog" ]
       []
+    btnLevelSelect = Html.button
+      [ Html.Events.onClick address SwitchToLevelSelect
+      , Html.Attributes.class "fa fa-sign-out" ]
+      []
   in
     Html.div
       [ Html.Attributes.class "machine-view" ]
       [ Html.div
         [ Html.Attributes.class "buttons" ]
-        [ btnProgram ],
+        [ btnProgram, btnLevelSelect ],
         Html.div
         [ Html.Attributes.class "container" ]
         (Machine.view renderPhase machine)

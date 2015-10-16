@@ -10,12 +10,14 @@ import Game.Program as Program
 import Game.Puzzle as Puzzle
 import Game.Puzzles as Puzzles
 import Game.Screen as Screen exposing (Screen)
+import Game.SelectLevel as SelectLevel
 
 
 type alias Model =
   { machineView : MachineView.Model
   , program : Program.Model
   , puzzle : Puzzle.Model
+  , selectLevel : SelectLevel.Model
   }
 
 
@@ -26,7 +28,8 @@ type alias Context =
 
 
 type Action
-  = MachineAction MachineView.Action
+  = SelectLevelAction SelectLevel.Action
+  | MachineAction MachineView.Action
   | ProgramAction Program.Action
 
 
@@ -38,10 +41,12 @@ init =
   ({ machineView = MachineView.initEmpty
    , program = Program.init
    , puzzle = Puzzles.fillUntil
+   , selectLevel = SelectLevel.init
    },
-   { view = Screen.Program
+   { view = Screen.SelectLevel
    , hasWon = False
    })
+
 
 
 {-|
@@ -49,42 +54,65 @@ Updates the current view on each signal tick.
 -}
 update : Action -> (Model, Context) -> (Model, Context)
 update action (game, context) =
-
   case action of
-
+    SelectLevelAction selectLevelAction ->
+      if context.view /= Screen.SelectLevel
+        then (game, context) -- discard select level events if not in machine view
+        else updateSelectLevel selectLevelAction (game, context)
     MachineAction machineAction ->
       if context.view /= Screen.Machine
         then (game, context) -- do not run machine program if not in machine view
-        else
-          case machineAction of
-            MachineView.SwitchToProgram ->
-              (game, { context | view <- Screen.Program })
-            otherwise ->
-              let
-                (machine', renderPhase') = MachineView.update machineAction game.machineView
-                hasWon' =
-                  machine'.stopped &&
-                  Puzzle.isSolved machine'.tape game.puzzle
-              in
-                ({ game | machineView <- (machine', renderPhase') },
-                 { context | hasWon <- hasWon' })
-
+        else updateMachine machineAction (game, context)
     ProgramAction programAction ->
       if context.view /= Screen.Program
         then (game, context) -- do not execute program actions if not in program view
-        else
-          case programAction of
-            Program.SwitchToMachine ->
-              ({game |
-                   machineView <-
-                   MachineView.init game.puzzle game.program
-               }
-              , { context | view <- Screen.Machine })
-            otherwise ->
-              ({ game |
-                 program <- Program.update programAction game.program },
-                 context
-              )
+        else updateProgram programAction (game, context)
+
+
+updateSelectLevel : SelectLevel.Action -> (Model, Context) -> (Model, Context)
+updateSelectLevel selectLevelAction (game, context) =
+  case selectLevelAction of
+    SelectLevel.Select puzzle ->
+      ({ game | puzzle <- puzzle },
+       { context | view <- Screen.Program })
+    otherwise ->
+      (game, context)
+
+
+updateMachine : MachineView.Action -> (Model, Context) -> (Model, Context)
+updateMachine machineAction (game, context) =
+  case machineAction of
+    MachineView.SwitchToProgram ->
+      (game, { context | view <- Screen.Program })
+    MachineView.SwitchToLevelSelect ->
+      (game, { context | view <- Screen.SelectLevel })
+    otherwise ->
+      let
+        (machine', renderPhase') = MachineView.update machineAction game.machineView
+        hasWon' =
+          machine'.stopped &&
+          Puzzle.isSolved machine'.tape game.puzzle
+      in
+        ({ game | machineView <- (machine', renderPhase') },
+         { context | hasWon <- hasWon' })
+
+
+updateProgram : Program.Action -> (Model, Context) -> (Model, Context)
+updateProgram programAction (game, context) =
+  case programAction of
+    Program.SwitchToMachine ->
+      ({game |
+           machineView <-
+           MachineView.init game.puzzle game.program
+       }
+      , { context | view <- Screen.Machine })
+    Program.SwitchToLevelSelect ->
+      (game, { context | view <- Screen.SelectLevel })
+    otherwise ->
+      ({ game |
+         program <- Program.update programAction game.program },
+         context
+      )
 
 
 {-|
@@ -96,6 +124,8 @@ view address (game, context) =
     if context.hasWon then [ Html.text "YOU WON!" ]
     else
       case context.view of
+        Screen.SelectLevel ->
+          [ SelectLevel.view (Signal.forwardTo address SelectLevelAction) game.selectLevel ]
         Screen.Program ->
           [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
         Screen.Machine ->

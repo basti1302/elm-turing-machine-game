@@ -2,11 +2,14 @@ module Game.Puzzle
   ( Model
   , init
   , isSolved
+  , view
   )
   where
 
-import Game.Tape as Tape
+import Html
+import Html.Attributes
 
+import Game.Tape as Tape
 
 type alias Model =
   { title : String
@@ -30,3 +33,11 @@ init title description input result =
 isSolved : Tape.Model -> Model -> Bool
 isSolved tape puzzle =
   Tape.trim tape == Tape.trim puzzle.result
+
+
+view : Model -> Html.Html
+view puzzle =
+  Html.div []
+  [ Html.span [ Html.Attributes.class "title"] [ Html.text puzzle.title ]
+  , Html.p [ Html.Attributes.class "description" ] [ Html.text puzzle.description ]
+  ]

@@ -1,7 +1,7 @@
 module Game.Program
   ( Model
   , init
-  , Action(SwitchToMachine)
+  , Action(SwitchToMachine, SwitchToLevelSelect)
   , execute
   , update
   , view
@@ -23,9 +23,10 @@ import Game.Symbol as Symbol exposing (Symbol)
 type alias Model = List Instruction.Model
 
 
-type Action
-  = Reset
+type Action =
+    Reset
   | SwitchToMachine
+  | SwitchToLevelSelect
   | Modify Instruction.Input Instruction.Action
 
 
@@ -127,13 +128,17 @@ view address model =
       [ Html.Events.onClick address Reset
       , Html.Attributes.class "fa fa-refresh" ]
       []
+    btnLevelSelect = Html.button
+      [ Html.Events.onClick address SwitchToLevelSelect
+      , Html.Attributes.class "fa fa-sign-out" ]
+      []
 
   in
     Html.div
       [ Html.Attributes.class "program-view" ]
       [ Html.div
           [ Html.Attributes.class "buttons" ]
-          [btnExecute, btnReset],
+          [ btnExecute, btnReset, btnLevelSelect ],
         Html.div
         [ Html.Attributes.class "container" ]
         [ table ]
