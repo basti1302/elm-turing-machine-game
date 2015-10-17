@@ -25,7 +25,7 @@ testIsSolved =
           , Cell.blank
           , Cell.blank
           ])
-        (Puzzle.init Tape.init (Tape.fromList
+        (Puzzle.initSimple "" "" Tape.init (Tape.fromList
           [ Cell.blank
           , Cell.blank
           , Cell.fromSymbol Symbol.B

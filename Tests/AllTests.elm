@@ -4,13 +4,14 @@ import ElmTest.Test exposing  (..)
 import ElmTest.Assertion exposing (..)
 import ElmTest.Runner.Element exposing (..)
 
-import Tests.CellTest
-import Tests.TapeTest
+import Tests.CellTest as CellTest
+import Tests.PuzzleTest as PuzzleTest
+import Tests.TapeTest as TapeTest
 
 all = suite "All Tests"
-  [ Tests.CellTest.tests
-  , Tests.PuzzleTest.tests
-  , Tests.TapeTest.tests
+  [ CellTest.tests
+  , PuzzleTest.tests
+  , TapeTest.tests
   ]
 
 main =
