@@ -136,22 +136,22 @@ view address { program, puzzle } =
     table = Html.table [ Html.Attributes.class "program" ] tableContent
     btnExecute = Html.button
       [ Html.Events.onClick address SwitchToMachine
-      , Html.Attributes.class "fa fa-play" ]
+      , Html.Attributes.class "fa fa-play top-button" ]
       []
     btnReset = Html.button
       [ Html.Events.onClick address Reset
-      , Html.Attributes.class "fa fa-refresh" ]
+      , Html.Attributes.class "fa fa-refresh top-button" ]
       []
     btnLevelSelect = Html.button
       [ Html.Events.onClick address SwitchToLevelSelect
-      , Html.Attributes.class "fa fa-sign-out" ]
+      , Html.Attributes.class "fa fa-sign-out top-button" ]
       []
 
   in
     Html.div
       [ Html.Attributes.class "program-view" ]
       [ Html.div
-          [ Html.Attributes.class "buttons" ]
+          [ Html.Attributes.class "top-button-bar" ]
           [ btnExecute, btnReset, btnLevelSelect ],
         Html.div
         [ Html.Attributes.class "container" ]

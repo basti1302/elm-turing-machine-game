@@ -59,25 +59,16 @@ update : Action -> (Model, Context) -> (Model, Context)
 update action (game, context) =
   case action of
     WelcomeAction welcomeAction ->
-      if context.view /= Screen.Welcome
-        -- discard welcome screen events if not on welcome screen
-        then (game, context)
-        else updateWelcome welcomeAction (game, context)
+      updateWelcome welcomeAction (game, context)
     SelectLevelAction selectLevelAction ->
-      if context.view /= Screen.SelectLevel
-        -- discard select level events if not in select level view
-        then (game, context)
-        else updateSelectLevel selectLevelAction (game, context)
+      updateSelectLevel selectLevelAction (game, context)
+    ProgramAction programAction ->
+      updateProgram programAction (game, context)
     MachineAction machineAction ->
+      -- do not run machine program if not in machine view
       if context.view /= Screen.Machine
-        -- do not run machine program if not in machine view
         then (game, context)
         else updateMachine machineAction (game, context)
-    ProgramAction programAction ->
-      if context.view /= Screen.Program
-        -- do not execute program actions if not in program view
-        then (game, context)
-        else updateProgram programAction (game, context)
 
 
 updateWelcome : Welcome.Action -> (Model, Context) -> (Model, Context)
@@ -99,7 +90,9 @@ updateSelectLevel selectLevelAction (game, context) =
        },
        { context | view <- Screen.Program })
     otherwise ->
-      (game, context)
+      ({ game | selectLevel <-
+        SelectLevel.update selectLevelAction game.selectLevel }
+       , context)
 
 
 updateMachine : MachineView.Action -> (Model, Context) -> (Model, Context)

@@ -2,13 +2,16 @@ module Game.Puzzle
   ( Model
   , init
   , initSimple
+  , Action(Select)
   , isSolved
-  , view
+  , viewShort
+  , viewDetails
   )
   where
 
 import Html
 import Html.Attributes
+import Html.Events
 
 import Game.Symbol as Symbol exposing (Symbol)
 import Game.State as State exposing (State)
@@ -24,6 +27,8 @@ type alias Model =
   , result : Tape.Model
   }
 
+
+type Action = Select Model
 
 {-|
 Initializes a puzzle with only one input symbol (red) and two states (A and HALT).
@@ -73,9 +78,34 @@ isSolved tape puzzle =
   Tape.trim tape == Tape.trim puzzle.result
 
 
-view : Model -> Html.Html
-view puzzle =
+viewShort : Signal.Address Action -> Model -> Html.Html
+viewShort address puzzle =
   Html.div []
-  [ Html.span [ Html.Attributes.class "title"] [ Html.text puzzle.title ]
-  , Html.p [ Html.Attributes.class "description" ] [ Html.text puzzle.description ]
+  [ Html.span
+    [ Html.Attributes.class "title"]
+    [ buttonPlay address puzzle
+    , Html.text puzzle.title
+    ]
   ]
+
+
+viewDetails : Signal.Address Action -> Model -> Html.Html
+viewDetails address puzzle =
+  Html.div []
+  [ Html.span
+    [ Html.Attributes.class "title"]
+    [ buttonPlay address puzzle
+    , Html.text puzzle.title
+    ]
+  , Html.p
+    [ Html.Attributes.class "description" ]
+    [ Html.text puzzle.description ]
+  ]
+
+
+buttonPlay : Signal.Address Action -> Model -> Html.Html
+buttonPlay address puzzle =
+  Html.button
+    [ Html.Events.onClick address <| Select puzzle
+    , Html.Attributes.class "fa fa-play btn-select-level" ]
+    []

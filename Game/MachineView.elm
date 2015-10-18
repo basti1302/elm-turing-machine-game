@@ -88,17 +88,17 @@ view address (machine, renderPhase)  =
   let
     btnProgram = Html.button
       [ Html.Events.onClick address SwitchToProgram
-      , Html.Attributes.class "fa fa-wrench" ]
+      , Html.Attributes.class "fa fa-wrench top-button" ]
       []
     btnLevelSelect = Html.button
       [ Html.Events.onClick address SwitchToLevelSelect
-      , Html.Attributes.class "fa fa-sign-out" ]
+      , Html.Attributes.class "fa fa-sign-out top-button" ]
       []
   in
     Html.div
       [ Html.Attributes.class "machine-view" ]
       [ Html.div
-        [ Html.Attributes.class "buttons" ]
+        [ Html.Attributes.class "top-button-bar" ]
         [ btnProgram, btnLevelSelect ],
         Html.div
         [ Html.Attributes.class "container" ]
