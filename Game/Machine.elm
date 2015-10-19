@@ -11,6 +11,7 @@ import Html
 import Html.Attributes
 
 import Game.Cell as Cell
+import Game.Instruction as Instruction
 import Game.Move as Move exposing (Move)
 import Game.Program as Program
 import Game.RenderPhase as RenderPhase exposing (RenderPhase)
@@ -51,18 +52,10 @@ init tape headPosition program =
 Predicts the next step (the outcome of executing the Turing machine program once
 on the current state of the machine) without actually performing it.
 -}
-predictNextStep : Model -> Result String (State, Symbol, Move)
+predictNextStep : Model -> Result String Instruction.Output
 predictNextStep machine =
-  let
-    maybeInstruction = Program.execute (machine.state, read machine) machine.program
-  in
-    case maybeInstruction of
-      Just instruction ->
-        Result.Ok ( instruction.output.state
-        , instruction.output.symbol
-        , instruction.output.move
-        )
-      Nothing -> Result.Err "no instruction available"
+  Result.map (\instruction -> instruction.output)
+    <| Program.execute (machine.state, read machine) machine.program
 
 
 {-|
@@ -86,6 +79,7 @@ update : Action -> Model -> Model
 update action model =
   case action of
     ExecuteStep -> executeStep model
+    otherwise -> model
 
 
 {-|
@@ -102,18 +96,22 @@ executeStep machine =
                          , head <- head'
                          , stepCount <- machine.stepCount + 1 }
     symbol = read machine'
-    maybeInstruction = Program.execute (machine'.state, symbol) machine.program
+    instructionResult = Program.execute (machine'.state, symbol) machine.program
   in
-    case maybeInstruction of
-      Just instruction -> transform
+    case instructionResult of
+      Result.Ok instruction -> transform
         ( instruction.output.state
         , instruction.output.symbol
         , instruction.output.move
         ) machine'
-      Nothing ->
-        -- TODO Use Result to propagate error up
-        let _ = Debug.log "Incomplete Turing machine program for" (machine'.state, symbol)
-        in Debug.log "Halting Turing machine at" (transform (State.HALT, Symbol.blank, Move.Right) machine')
+      -- This should never happen™, since the program screen always produces a
+      -- complete program for a well defined puzzle.
+      Result.Err error ->
+        let _ = Debug.log
+                ("Error when executing Turing machine step: " ++ error)
+                Nothing
+        -- just halt machine
+        in { machine' | stopped <- True }
 
 
 {-|

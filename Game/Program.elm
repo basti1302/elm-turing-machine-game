@@ -57,8 +57,7 @@ init puzzle =
 Retrieves the matching instruction from the Turing machine program for the given
 input state and input symbol.
 -}
--- TODO Replace Maybe type be Result
-execute : (State, Symbol) -> Model -> Maybe Instruction.Model
+execute : (State, Symbol) -> Model -> Result String Instruction.Model
 execute (state, symbol) { program } =
   let
     candidates = List.filter
@@ -66,10 +65,15 @@ execute (state, symbol) { program } =
            instruction.input.state == state &&
            instruction.input.symbol == symbol)
       program
+    instructionResult =
+      if List.length candidates == 1
+        then List.head candidates
+        else Nothing
   in
-    if List.length candidates == 1
-      then List.head candidates
-      else Nothing
+    case instructionResult of
+      Just instr -> Result.Ok instr
+      Nothing -> Result.Err <| "No instruction for " ++
+        toString (state, symbol)
 
 
 update : Action -> Model -> Model
