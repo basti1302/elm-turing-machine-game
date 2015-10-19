@@ -237,7 +237,7 @@ div.machine-view div.container {
 
 .head {
   position: absolute;
-  top: calc(50% + 15px);
+  top: calc(50% + 5px);
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 
