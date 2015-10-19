@@ -23,6 +23,7 @@ type alias Model =
   , description : String
   , tapeAlphabet : List Symbol -- tape symbols, excluding blank
   , states : List State
+  , initialHeadPosition : Int
   , input : Tape.Model
   , result : Tape.Model
   }
@@ -44,6 +45,7 @@ initSimple title description input result =
   , description = description
   , tapeAlphabet = [ Symbol.Empty, Symbol.A ]
   , states = [ State.A, State.HALT ]
+  , initialHeadPosition = 0
   , input = input
   , result = result
   }
@@ -60,14 +62,16 @@ init :
   String ->
   List Symbol ->
   List State ->
+  Int ->
   Tape.Model ->
   Tape.Model ->
   Model
-init title description inputAlphabet states input result =
+init title description inputAlphabet states initialHeadPosition input result =
   { title = title
   , description = description
   , tapeAlphabet = Symbol.Empty :: inputAlphabet
   , states = states ++ [ State.HALT ]
+  , initialHeadPosition = initialHeadPosition
   , input = input
   , result = result
   }

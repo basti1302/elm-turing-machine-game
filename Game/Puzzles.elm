@@ -10,13 +10,9 @@ import Game.Tape as Tape
 type alias Model = List Puzzle.Model
 
 
--- TODO Can't set head into middle of tape :-(
--- Required for Fill In Both Directions
-
-
 init : Model
 init =
-  [ findAndErase, fillUntil, appendTwo ]
+  [ findAndErase, fillUntil, appendOne, appendTwo, fillInBothDirections ]
 
 
 default : Puzzle.Model
@@ -67,6 +63,29 @@ fillUntil =
       result
 
 
+appendOne : Puzzle.Model
+appendOne =
+  let
+    input = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+    result = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+  in
+    Puzzle.initSimple
+      "Append One"
+      "Given a sequence of red cells, append another red cells after the end of the sequence (that is, make the string of red cells one cell longer).
+"
+      input
+      result
+
+
 appendTwo : Puzzle.Model
 appendTwo =
   let
@@ -89,5 +108,36 @@ appendTwo =
 "
       [ Symbol.A ]
       [ State.A, State.B ]
+      0
       input
       result
+
+
+fillInBothDirections : Puzzle.Model
+fillInBothDirections =
+  let
+    input = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.Empty)
+      , (Cell.fromSymbol Symbol.Empty)
+      , (Cell.fromSymbol Symbol.Empty)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+    result = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+  in
+    Puzzle.init
+      "Fill In Both Directions"
+      "You will start in the middle between a red cell to the left and a red cell to the right. Fill the space between those cells completely with red cells. Don't modify cells outside this area."
+      [ Symbol.A ]
+      [ State.A, State.B ]
+      2
+      input
+      result
+
+

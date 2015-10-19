@@ -36,11 +36,11 @@ type alias Model  =
   }
 
 
-init : Tape.Model -> Program.Model -> Model
-init tape program =
+init : Tape.Model -> Int -> Program.Model -> Model
+init tape headPosition program =
   { state = initialState
   , tape = tape
-  , head = 0
+  , head = headPosition
   , program = program
   , stepCount = 0
   , stopped = False

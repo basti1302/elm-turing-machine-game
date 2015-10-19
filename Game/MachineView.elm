@@ -32,11 +32,13 @@ type Action =
 
 
 initEmpty : Model
-initEmpty = (Machine.init Tape.init <| Program.init Puzzles.default, RenderPhase.Init)
+initEmpty = (Machine.init Tape.init 0 (Program.init Puzzles.default), RenderPhase.Init)
 
 
 init : Puzzle.Model -> Program.Model -> Model
-init puzzle program = (Machine.init puzzle.input program, RenderPhase.Init)
+init puzzle program =
+  (Machine.init puzzle.input puzzle.initialHeadPosition program,
+   RenderPhase.Init)
 
 
 maxSteps : Int
