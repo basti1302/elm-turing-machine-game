@@ -35,8 +35,6 @@ type Action =
   | Modify Instruction.Input Instruction.Action
 
 
-
-
 init : Puzzle.Model -> Model
 init puzzle =
   let
@@ -102,55 +100,67 @@ viewWithInput : Signal.Address Action ->
 viewWithInput address renderFunction instruction =
   renderFunction (convertSignal address instruction) instruction
 
-
-view : Signal.Address Action -> Model -> Html.Html
-view address { program, puzzle } =
+viewRowInputSymbols program =
   let
     tdsInputSymbols = List.map Instruction.viewInputSymbol program
     tdsInputSymbolsWithHeader =
       (Html.td [ Html.Attributes.rowspan 2 ] [ Html.text "In" ])
       :: tdsInputSymbols
-    rowInputSymbols = Html.tr [] tdsInputSymbolsWithHeader
-    rowInputStates = Html.tr [] <| List.map Instruction.viewInputState program
+  in
+    Html.tr [] tdsInputSymbolsWithHeader
 
-    rowSpacers = Html.tr [] <| List.repeat (List.length program) Instruction.spacer
+viewRowInputStates program =
+  Html.tr [] <| List.map Instruction.viewInputState program
 
+viewRowSpacers program =
+  Html.tr [] <| List.repeat (List.length program) Instruction.spacer
+
+viewRowOutputSymbols address program puzzle =
+  let
     renderOutputSymbol = Instruction.viewOutputSymbol puzzle.tapeAlphabet
     tdsOutputSymbols =
       List.map (viewWithInput address renderOutputSymbol) program
     tdsOutputSymbolsWithHeader =
       (Html.td [ Html.Attributes.rowspan 3 ] [ Html.text "Out" ])
       :: tdsOutputSymbols
-    rowOutputSymbols = Html.tr [] tdsOutputSymbolsWithHeader
-    renderOutputState = Instruction.viewOutputState puzzle.states
-    rowOutputStates = Html.tr [] <|
-      List.map (viewWithInput address renderOutputState) program
-    rowMoves = Html.tr [] <|
-      List.map (viewWithInput address Instruction.viewMove) program
-    rows =
-       [ rowInputSymbols
-       , rowInputStates
-       , rowSpacers
-       , rowOutputSymbols
-       , rowOutputStates
-       , rowMoves
-       ]
+  in
+   Html.tr [] tdsOutputSymbolsWithHeader
 
+viewRowOutputStates address program puzzle =
+  let
+    renderOutputState = Instruction.viewOutputState puzzle.states
+  in
+    Html.tr [] <|
+      List.map (viewWithInput address renderOutputState) program
+
+viewRowMoves address program =
+  Html.tr [] <|
+    List.map (viewWithInput address Instruction.viewMove) program
+
+
+button address action icon =
+  Html.button
+    [ Html.Events.onClick address action
+    , Html.Attributes.class <| "fa fa-" ++ icon ++ " top-button" ]
+    []
+
+
+view : Signal.Address Action -> Model -> Html.Html
+view address { program, puzzle } =
+  let
+    rows =
+       [ viewRowInputSymbols program
+       , viewRowInputStates program
+       , viewRowSpacers program
+       , viewRowOutputSymbols address program puzzle
+       , viewRowOutputStates address program puzzle
+       , viewRowMoves address program
+       ]
     tableContent = [ Html.tbody [] rows ]
     table = Html.table [ Html.Attributes.class "program" ] tableContent
-    btnExecute = Html.button
-      [ Html.Events.onClick address SwitchToMachine
-      , Html.Attributes.class "fa fa-play top-button" ]
-      []
-    btnReset = Html.button
-      [ Html.Events.onClick address Reset
-      , Html.Attributes.class "fa fa-refresh top-button" ]
-      []
-    btnLevelSelect = Html.button
-      [ Html.Events.onClick address SwitchToLevelSelect
-      , Html.Attributes.class "fa fa-sign-out top-button" ]
-      []
-
+    btnExecute = button address SwitchToMachine "play"
+    btnReset = button address Reset "refresh"
+    btnLevelSelect = button address SwitchToLevelSelect "sign-out"
   in
     Html.div
       [ Html.Attributes.class "program-view" ]
