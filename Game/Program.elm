@@ -7,15 +7,16 @@ module Game.Program
   , view
   ) where
 
-import Html
-import Html.Attributes
-import Html.Events
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import List.Extra
 
 import Game.Instruction as Instruction
 import Game.Puzzle as Puzzle
 import Game.State as State exposing (State)
 import Game.Symbol as Symbol exposing (Symbol)
+import Game.Tape as Tape
 
 
 -- A Dict Instruction.Input Instrution.Output
@@ -94,9 +95,9 @@ convertSignal address instruction =
 
 
 viewWithInput : Signal.Address Action ->
-      (Signal.Address Instruction.Action -> Instruction.Model -> Html.Html) ->
+      (Signal.Address Instruction.Action -> Instruction.Model -> Html) ->
       Instruction.Model ->
-      Html.Html
+      Html
 viewWithInput address renderFunction instruction =
   renderFunction (convertSignal address instruction) instruction
 
@@ -104,16 +105,16 @@ viewRowInputSymbols program =
   let
     tdsInputSymbols = List.map Instruction.viewInputSymbol program
     tdsInputSymbolsWithHeader =
-      (Html.td [ Html.Attributes.rowspan 2 ] [ Html.text "In" ])
+      (td [ rowspan 2 ] [ text "In" ])
       :: tdsInputSymbols
   in
-    Html.tr [] tdsInputSymbolsWithHeader
+    tr [] tdsInputSymbolsWithHeader
 
 viewRowInputStates program =
-  Html.tr [] <| List.map Instruction.viewInputState program
+  tr [] <| List.map Instruction.viewInputState program
 
 viewRowSpacers program =
-  Html.tr [] <| List.repeat (List.length program) Instruction.spacer
+  tr [] <| List.repeat (List.length program) Instruction.spacer
 
 viewRowOutputSymbols address program puzzle =
   let
@@ -121,33 +122,36 @@ viewRowOutputSymbols address program puzzle =
     tdsOutputSymbols =
       List.map (viewWithInput address renderOutputSymbol) program
     tdsOutputSymbolsWithHeader =
-      (Html.td [ Html.Attributes.rowspan 3 ] [ Html.text "Out" ])
+      (td [ rowspan 3 ] [ text "Out" ])
       :: tdsOutputSymbols
   in
-   Html.tr [] tdsOutputSymbolsWithHeader
+   tr [] tdsOutputSymbolsWithHeader
 
 viewRowOutputStates address program puzzle =
   let
     renderOutputState = Instruction.viewOutputState puzzle.states
   in
-    Html.tr [] <|
+    tr [] <|
       List.map (viewWithInput address renderOutputState) program
 
 viewRowMoves address program =
-  Html.tr [] <|
+  tr [] <|
     List.map (viewWithInput address Instruction.viewMove) program
 
 
-button address action icon =
+topButton address action icon =
   Html.button
-    [ Html.Events.onClick address action
-    , Html.Attributes.class <| "fa fa-" ++ icon ++ " top-button" ]
+    [ onClick address action
+    , class <| "fa fa-" ++ icon ++ " top-button" ]
     []
 
 
-view : Signal.Address Action -> Model -> Html.Html
+view : Signal.Address Action -> Model -> Html
 view address { program, puzzle } =
   let
+    btnExecute = topButton address SwitchToMachine "play"
+    btnReset = topButton address Reset "refresh"
+    btnLevelSelect = topButton address SwitchToLevelSelect "sign-out"
     rows =
        [ viewRowInputSymbols program
        , viewRowInputStates program
@@ -156,18 +160,32 @@ view address { program, puzzle } =
        , viewRowOutputStates address program puzzle
        , viewRowMoves address program
        ]
-    tableContent = [ Html.tbody [] rows ]
-    table = Html.table [ Html.Attributes.class "program" ] tableContent
-    btnExecute = button address SwitchToMachine "play"
-    btnReset = button address Reset "refresh"
-    btnLevelSelect = button address SwitchToLevelSelect "sign-out"
+    tableContent = [ tbody [] rows ]
+    programTable = table [ class "program" ] tableContent
+    puzzleInputRow =
+      span [ class "mini-tape" ]
+      [ span [ class "mini-tape-label fa fa-angle-double-right" ] []
+      , Tape.viewMiniatureWithHead puzzle.initialHeadPosition puzzle.input
+      ]
+    puzzleResultRow =
+      span [ class "mini-tape" ]
+      [ span [ class "mini-tape-label fa fa-angle-double-left" ] []
+      , Tape.viewMiniature puzzle.result
+      ]
   in
-    Html.div
-      [ Html.Attributes.class "program-view" ]
-      [ Html.div
-          [ Html.Attributes.class "top-button-bar" ]
-          [ btnExecute, btnReset, btnLevelSelect ],
-        Html.div
-        [ Html.Attributes.class "container" ]
-        [ table ]
+    div
+      [ class "program-view" ]
+      [ div
+        [ class "top-button-bar" ]
+        [ btnExecute, btnReset, btnLevelSelect ],
+        div
+        [ class "container" ]
+        [ programTable
+        , div
+          [ class "mini-tape-container" ]
+          [ puzzleInputRow
+          , br [] []
+          , puzzleResultRow
+          ]
+        ]
       ]

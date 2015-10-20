@@ -4,7 +4,8 @@ module Game.Cell
   , blank
   , Action(Write)
   , update
-  , view)
+  , view
+  , viewMiniature)
   where
 
 import Html
@@ -57,4 +58,23 @@ view renderPhase model =
       , ("transition", transition)
       ]
     ]
+    [ Html.text "" ]
+
+
+{-|
+Convert the cell into a very small HTML span for the miniature tape view.
+-}
+viewMiniature : Bool -> Model -> Html.Html
+viewMiniature head model =
+  let
+    classes = "mini-cell cell-" ++ (Symbol.toColor model.symbol)
+    classes' =
+      if head && Symbol.toColor model.symbol == "red"
+        then "mini-head-altcolor " ++ classes
+      else if head
+        then "mini-head " ++ classes
+      else classes
+  in
+    Html.span
+    [ Html.Attributes.class classes' ]
     [ Html.text "" ]

@@ -166,7 +166,7 @@ div.container {
 
 table.program {
   margin: 0 auto;
-  margin-top: 10px;
+  margin-top: 15px;
 
   font: 100% sans-serif;
   border-collapse: collapse;
@@ -227,6 +227,23 @@ table.program td.spacer {
   padding: 0;
   width: 5px;
   height: 5px;
+}
+
+.mini-tape-container {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mini-tape {
+  width: 100%;
+}
+
+.mini-tape-label {
+  float: left;
+  margin-right: 7px;
 }
 
 /******************************************************************************
@@ -303,7 +320,16 @@ div.machine-view div.container {
   float: left;
   margin-left: 2px;
   margin-right: 2px;
-  border: 0.5px solid black;
+  border: 1px solid black;
+  box-shadow: none ! important;
+}
+
+.mini-cell.mini-head {
+  border: 2px solid red;
+}
+
+.mini-cell.mini-head-altcolor {
+  border: 2px solid white;
 }
 
 .cell-black {

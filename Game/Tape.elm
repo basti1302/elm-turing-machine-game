@@ -6,7 +6,9 @@ module Game.Tape
   , Action(Write, Extend)
   , trim
   , update
-  , view)
+  , view
+  , viewMiniature
+  , viewMiniatureWithHead)
   where
 
 import Array
@@ -144,3 +146,45 @@ view renderPhase head tape =
       [Html.Attributes.class "tape"]
         <| Array.toList
         <| Array.append leftAndHeadRendered rightRendered
+
+
+{-|
+Renders the tape to HTML.
+-}
+viewMiniatureWithHead : Int -> Model -> Html.Html
+viewMiniatureWithHead head tape =
+  let
+    -- how many cells to render.
+    numberOfCells = 9
+    leftSide = Array.slice 0 head tape
+    cellAtHeadMaybe = Array.get head tape
+    cellAtHead =
+      case cellAtHeadMaybe of
+        Just cell -> cell
+        Nothing -> Debug.crash "No cell at head"
+    rightSide = Array.slice (head + 1) numberOfCells tape
+
+    -- apply render function
+    leftRendered = Array.map (Cell.viewMiniature False) leftSide
+    leftAndHeadRendered = Array.push (Cell.viewMiniature True cellAtHead) leftRendered
+    rightRendered = Array.map (Cell.viewMiniature False) rightSide
+  in
+    Html.span []
+      <| Array.toList
+      <| Array.append leftAndHeadRendered rightRendered
+
+
+{-|
+Renders the tape to HTML.
+-}
+viewMiniature : Model -> Html.Html
+viewMiniature tape =
+  let
+    -- how many cells to render.
+    numberOfCells = 9
+    viewport = Array.slice 0 numberOfCells tape
+
+    -- apply render function
+    rendered = Array.map (Cell.viewMiniature False) viewport
+  in
+    Html.span [] <| Array.toList rendered
