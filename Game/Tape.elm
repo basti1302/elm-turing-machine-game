@@ -106,6 +106,8 @@ Renders the tape to HTML.
 view : RenderPhase -> Int -> Model -> Html.Html
 view renderPhase head tape =
   let
+    -- how many cells to render to each side of the head. show = n means we
+    -- render 2n+1 cells.
     show = 4
     missingLeft = max (show - head) 0 -- cells we need to append at the left edge
     deltaRight = Array.length tape - head - 1 -- # of cells between head and right edge

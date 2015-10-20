@@ -188,17 +188,19 @@ table.program td {
   height: 30px;
 }
 
-table.program td.symbol-blue {
+table.program td.symbol-black {
+  background-color: #333;
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
-    0px 0px 7px 3px rgba(0, 0, 200, 0.3);
+    0px 0px 7px 3px rgba(30, 30, 30, 0.3);
 }
-table.program td.symbol-blue:hover {
+table.program td.symbol-black:hover {
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
     0px 0px 10px 4px rgba(0, 0, 200, 0.5);
 }
 table.program td.symbol-red {
+  background-color: red;
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
     0px 0px 7px 3px rgba(200, 0, 0, 0.3);
@@ -207,6 +209,17 @@ table.program td.symbol-red:hover {
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
     0px 0px 10px 4px rgba(200, 0, 0, 0.5);
+}
+table.program td.symbol-blue {
+  background-color: blue;
+  box-shadow:
+    inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
+    0px 0px 7px 3px rgba(0, 0, 200, 0.3);
+}
+table.program td.symbol-blue:hover {
+  box-shadow:
+    inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
+    0px 0px 10px 4px rgba(0, 0, 200, 0.5);
 }
 
 table.program td.spacer {
@@ -275,15 +288,62 @@ div.machine-view div.container {
   height: 48px;
 }
 
+.cell {
+  width: 48px;
+  height: 48px;
+  float: left;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 1px solid black;
+}
+
+.mini-cell {
+  width: 16px;
+  height: 16px;
+  float: left;
+  margin-left: 2px;
+  margin-right: 2px;
+  border: 0.5px solid black;
+}
+
+.cell-black {
+  background-color: #333;
+  box-shadow:
+    1px 1px 3px 0 rgba(0, 0, 0, 0.2),
+    0px 0px 4px 2px rgba(30, 30, 30, 0.3),
+    inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7);
+}
+.cell-red {
+  background-color: red;
+  box-shadow:
+    1px 1px 3px 0 rgba(0, 0, 0, 0.2),
+    0px 0px 4px 2px rgba(200, 0, 0, 0.3),
+    inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7);
+}
 .cell-blue {
+  background-color: blue;
   box-shadow:
     1px 1px 3px 0 rgba(0, 0, 0, 0.2),
     0px 0px 4px 2px rgba(0, 0, 200, 0.3),
     inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7);
 }
-.cell-red {
+.cell-green {
+  background-color: green;
   box-shadow:
     1px 1px 3px 0 rgba(0, 0, 0, 0.2),
-    0px 0px 4px 2px rgba(200, 0, 0, 0.3),
+    0px 0px 4px 2px rgba(0, 200, 0, 0.3),
     inset 0px 0px 9px 7px rgba(0, 0, 0, 0.7);
+}
+/* TODO box shadows for all colors */
+.cell-cyan {
+  background-color: cyan;
+}
+.cell-magenta {
+  background-color: magenta;
+}
+.cell-yellow {
+  background-color: yellow;
+}
+.cell-white {
+  background-color: white;
 }

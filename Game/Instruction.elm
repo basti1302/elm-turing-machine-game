@@ -109,9 +109,6 @@ viewInputSymbol instruction =
   Html.td
     [ Html.Attributes.class
         ("symbol-" ++ Symbol.toColor instruction.input.symbol)
-    , Html.Attributes.style
-      [( "background-color" , Symbol.toColor instruction.input.symbol
-      )]
     ]
     []
 
@@ -136,8 +133,6 @@ viewOutputSymbol possibleSymbols address instruction =
     [ Html.Events.onClick address (ChangeSymbolOut possibleSymbols)
     , Html.Attributes.class
         ("symbol-" ++ Symbol.toColor instruction.output.symbol)
-    , Html.Attributes.style
-      [("background-color", Symbol.toColor instruction.output.symbol)]
     ]
     []
 

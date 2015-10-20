@@ -8,11 +8,11 @@ blank = Empty
 toColor : Symbol -> String
 toColor symbol =
   case symbol of
-    Empty -> "blue"
+    Empty -> "black"
     A     -> "red"
-    B     -> "green"
-    C     -> "cyan"
-    D     -> "magenta"
-    E     -> "yellow"
-    F     -> "black"
+    B     -> "blue"
+    C     -> "green"
+    D     -> "cyan"
+    E     -> "magenta"
+    F     -> "yellow"
     G     -> "white"

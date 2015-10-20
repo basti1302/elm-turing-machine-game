@@ -12,7 +12,13 @@ type alias Model = List Puzzle.Model
 
 init : Model
 init =
-  [ findAndErase, fillUntil, appendOne, appendTwo, fillInBothDirections ]
+  [ findAndErase
+  , fillUntil
+  , appendOne
+  , appendTwo
+  , fillInBothDirections
+  , fillInBothDirectionsTwoStates
+  ]
 
 
 default : Puzzle.Model
@@ -33,7 +39,7 @@ findAndErase =
   in
     Puzzle.initSimple
       "Find and Erase"
-      "Move to the right until you find the red cell, then erase it and halt."
+      "Move to the right until you find the red cell, then turn it off and halt."
       input
       result
 
@@ -58,7 +64,7 @@ fillUntil =
   in
     Puzzle.initSimple
       "Fill Until"
-      "Move to the right and make all cells red while you move, until you find the first red cell, then halt."
+      "Move to the right and light all cells red while you move, until you find the first red cell, then halt."
       input
       result
 
@@ -80,7 +86,7 @@ appendOne =
   in
     Puzzle.initSimple
       "Append One"
-      "Given a sequence of red cells, append another red cells after the end of the sequence (that is, make the string of red cells one cell longer).
+      "Given a sequence of red cells, append one more red cell after the end of the sequence (that is, make the string of red cells one cell longer).
 "
       input
       result
@@ -132,8 +138,36 @@ fillInBothDirections =
       ]
   in
     Puzzle.init
-      "Fill In Both Directions"
+      "Fill in Both Directions"
       "You will start in the middle between a red cell to the left and a red cell to the right. Fill the space between those cells completely with red cells. Don't modify cells outside this area."
+      [ Symbol.A ]
+      [ State.A, State.B, State.C ]
+      2
+      input
+      result
+
+
+fillInBothDirectionsTwoStates : Puzzle.Model
+fillInBothDirectionsTwoStates =
+  let
+    input = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.Empty)
+      , (Cell.fromSymbol Symbol.Empty)
+      , (Cell.fromSymbol Symbol.Empty)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+    result = Tape.fromList
+      [ (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      , (Cell.fromSymbol Symbol.A)
+      ]
+  in
+    Puzzle.init
+      "Fill in Both Directions II"
+      "Same task as before, but this time you only have two different states at your disposal. As in \"Fill In Both Directions\", you will start in the middle between a red cell to the left and a red cell to the right. Fill the space between those cells completely with red cells. Don't modify cells outside this area."
       [ Symbol.A ]
       [ State.A, State.B ]
       2
