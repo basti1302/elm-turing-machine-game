@@ -132,7 +132,7 @@ viewOutputSymbol possibleSymbols address instruction =
   Html.td
     [ Html.Events.onClick address (ChangeSymbolOut possibleSymbols)
     , Html.Attributes.class
-        ("symbol-" ++ Symbol.toColor instruction.output.symbol)
+        ("output symbol-" ++ Symbol.toColor instruction.output.symbol)
     ]
     []
 

@@ -194,10 +194,10 @@ table.program td.symbol-black {
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
     0px 0px 7px 3px rgba(30, 30, 30, 0.3);
 }
-table.program td.symbol-black:hover {
+table.program td.symbol-black.output:hover {
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
-    0px 0px 10px 4px rgba(0, 0, 200, 0.5);
+    0px 0px 10px 4px rgba(30, 30, 30, 0.5);
 }
 table.program td.symbol-red {
   background-color: red;
@@ -205,7 +205,7 @@ table.program td.symbol-red {
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
     0px 0px 7px 3px rgba(200, 0, 0, 0.3);
 }
-table.program td.symbol-red:hover {
+table.program td.symbol-red.output:hover {
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
     0px 0px 10px 4px rgba(200, 0, 0, 0.5);
@@ -216,7 +216,7 @@ table.program td.symbol-blue {
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.5),
     0px 0px 7px 3px rgba(0, 0, 200, 0.3);
 }
-table.program td.symbol-blue:hover {
+table.program td.symbol-blue.output:hover {
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
     0px 0px 10px 4px rgba(0, 0, 200, 0.5);
