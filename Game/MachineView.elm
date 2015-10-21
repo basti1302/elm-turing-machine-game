@@ -2,14 +2,18 @@ module Game.MachineView
   ( Model
   , initEmpty
   , init
-  , Action(ExecuteMachineStep, SwitchToProgram, SwitchToLevelSelect)
+  , Action ( ExecuteMachineStep
+           , SwitchToProgram
+           , SwitchToLevelSelect
+           , GoToNextLevel)
   , update
   , view
+  , viewWonLost
   ) where
 
-import Html
-import Html.Attributes
-import Html.Events
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 import Game.Machine as Machine
 import Game.Program as Program
@@ -29,6 +33,7 @@ type Action =
     ExecuteMachineStep
   | SwitchToProgram
   | SwitchToLevelSelect
+  | GoToNextLevel
 
 
 initEmpty : Model
@@ -89,24 +94,66 @@ update action (machine, renderPhase)  =
                 RenderPhase.CompleteStep -> (machine, RenderPhase.Init)
 
 
-view : Signal.Address Action -> Model -> Html.Html
-view address (machine, renderPhase)  =
+view : Signal.Address Action -> Model -> Html
+view address model = viewInternal address Nothing model
+
+viewWonLost : Signal.Address Action -> Bool -> Model -> Html
+viewWonLost address hasWon model =
   let
-    btnProgram = Html.button
-      [ Html.Events.onClick address SwitchToProgram
-      , Html.Attributes.class "fa fa-wrench top-button" ]
+    wonLostText = if hasWon then "☺☻ \\o/ (ʘ‿ʘ) \\o/ ☻☺"
+                            else ":-( ☹☹☹☹ ಠ_ಠ ☹☹☹☹ )-:"
+    btnTryAgain = button
+      [ onClick address SwitchToProgram
+      , class "fa fa-wrench top-button" ]
       []
     btnLevelSelect = Html.button
-      [ Html.Events.onClick address SwitchToLevelSelect
-      , Html.Attributes.class "fa fa-sign-out top-button" ]
+      [ onClick address SwitchToLevelSelect
+      , class "fa fa-sign-out top-button" ]
       []
+    btnNextLevel = button
+      [ onClick address GoToNextLevel
+      , class "fa fa-forward" ]
+      []
+    buttons = if hasWon then span [] [ btnNextLevel, btnLevelSelect]
+                        else span [] [ btnTryAgain, btnLevelSelect ]
+    wonLostMessage =
+    (Just <|
+      div
+      [ class "won-lost-message" ]
+      ([ br [][]
+      , text wonLostText
+      , br [][]
+      , br [][]
+      ] ++ [buttons])
+    )
+  in
+    viewInternal address wonLostMessage model
+
+
+viewInternal : Signal.Address Action -> Maybe Html -> Model -> Html
+viewInternal address wonLostBlocker (machine, renderPhase)  =
+  let
+    btnProgram = button
+      [ onClick address SwitchToProgram
+      , class "fa fa-wrench top-button" ]
+      []
+    btnLevelSelect = Html.button
+      [ onClick address SwitchToLevelSelect
+      , class "fa fa-sign-out top-button" ]
+      []
+    programContent = (Machine.view renderPhase machine)
+    content = case wonLostBlocker of
+      Just blocker -> blocker :: programContent
+      Nothing -> programContent
   in
     Html.div
-      [ Html.Attributes.class "machine-view" ]
+      [ class "machine-view" ]
       [ Html.div
-        [ Html.Attributes.class "top-button-bar" ]
+        [ class "top-button-bar" ]
         [ btnProgram, btnLevelSelect ],
         Html.div
-        [ Html.Attributes.class "container" ]
-        (Machine.view renderPhase machine)
+        [ class "container" ]
+        content
       ]
+
+

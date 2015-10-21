@@ -1,5 +1,7 @@
 module Game.Puzzles where
 
+import List.Extra
+
 import Game.Cell as Cell
 import Game.Puzzle as Puzzle
 import Game.State as State exposing (State)
@@ -12,7 +14,8 @@ type alias Model = List Puzzle.Model
 
 init : Model
 init =
-  [ findAndErase
+  [ justStop
+  , findAndErase
   , fillUntil
   , appendOne
   , appendTwo
@@ -21,9 +24,32 @@ init =
   ]
 
 
+nextLevel : Puzzle.Model -> Model -> Maybe Puzzle.Model
+nextLevel current puzzles =
+  let
+    currentAndRest = List.Extra.dropWhile (\ p -> p /= current) puzzles
+    rest = List.tail currentAndRest
+  in
+    case rest of
+      Just l -> List.head l
+      Nothing -> Nothing
+
+
 default : Puzzle.Model
 default =
   Puzzle.initSimple "" "" (Tape.fromList []) (Tape.fromList [])
+
+
+justStop : Puzzle.Model
+justStop =
+  let
+    input = Tape.fromList [ (Cell.fromSymbol Symbol.Empty) ]
+    result = Tape.fromList [ (Cell.fromSymbol Symbol.Empty) ]
+  in
+    Puzzle.init
+      "Just Stop"
+      "Just stop the machine. Switch the machine to the halting state."
+      [] [State.A] 0 input result
 
 
 findAndErase : Puzzle.Model

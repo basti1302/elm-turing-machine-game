@@ -24,6 +24,7 @@ type alias Model =
 
 type alias Context =
   { view : Screen
+  , puzzles : Puzzles.Model
   , hasWon : Bool
   , hasLost : Bool
   }
@@ -47,6 +48,7 @@ init =
    , selectLevel = SelectLevel.init
    },
    { view = Screen.Welcome
+   , puzzles = Puzzles.init
    , hasWon = False
    , hasLost = False
    })
@@ -102,6 +104,18 @@ updateMachine machineAction (game, context) =
       (game, { context | view <- Screen.Program })
     MachineView.SwitchToLevelSelect ->
       (game, { context | view <- Screen.SelectLevel })
+    MachineView.GoToNextLevel ->
+      let
+        maybeNextLevel = Puzzles.nextLevel game.puzzle context.puzzles
+      in
+        case maybeNextLevel of
+          Just nextLevel ->
+            ({ game | puzzle <- nextLevel,
+                      program <- Program.init nextLevel },
+             { context | view <- Screen.Program })
+          -- last level, return to level selection
+          Nothing ->
+            (game, { context | view <- Screen.SelectLevel })
     otherwise ->
       let
         (machine', renderPhase') = MachineView.update machineAction game.machineView
@@ -125,7 +139,10 @@ updateProgram programAction (game, context) =
            machineView <-
            MachineView.init game.puzzle game.program
        }
-      , { context | view <- Screen.Machine })
+      , { context | view <- Screen.Machine
+      -- also reset won/lost marker, otherwise old won/lost message is shown
+                  , hasWon <- False
+                  , hasLost <- False })
     Program.SwitchToLevelSelect ->
       (game, { context | view <- Screen.SelectLevel })
     otherwise ->
@@ -141,18 +158,24 @@ Renders the game view.
 view : Signal.Address Action -> (Model, Context) -> Html.Html
 view address (game, context) =
   let content =
-    if context.hasWon then [ Html.text "YOU WON!" ]
-    else if context.hasLost then [ Html.text "nope :-(" ]
-    else
-      case context.view of
-        Screen.Welcome ->
-          [ Welcome.view (Signal.forwardTo address WelcomeAction) ]
-        Screen.SelectLevel ->
-          [ SelectLevel.view (Signal.forwardTo address SelectLevelAction) game.selectLevel ]
-        Screen.Program ->
-          [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
-        Screen.Machine ->
-          [ MachineView.view (Signal.forwardTo address MachineAction) game.machineView ]
+    case context.view of
+      Screen.Welcome ->
+        [ Welcome.view (Signal.forwardTo address WelcomeAction) ]
+      Screen.SelectLevel ->
+        [ SelectLevel.view (Signal.forwardTo address SelectLevelAction) game.selectLevel ]
+      Screen.Program ->
+        [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
+      Screen.Machine ->
+        if context.hasWon || context.hasLost
+        then
+          [ MachineView.viewWonLost
+              (Signal.forwardTo address MachineAction)
+              context.hasWon
+              game.machineView ]
+        else
+          [ MachineView.view
+              (Signal.forwardTo address MachineAction)
+              game.machineView ]
   in
     Html.div
       [ Html.Attributes.class "game" ]
