@@ -15,9 +15,9 @@ module Game.Instruction
   ) where
 
 
-import Html
-import Html.Attributes
-import Html.Events
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import List.Extra
 
 import Game.Move as Move exposing (Move)
@@ -96,57 +96,57 @@ update action instruction =
       in { instruction | output <- { output | move <- move' }}
 
 
-viewInputState : Model -> Html.Html
+viewInputState : Model -> Html
 viewInputState instruction =
-  Html.td
-    [ Html.Attributes.class "state" ]
-    [ let class = "fa " ++ State.toClass instruction.input.state
-      in Html.span [Html.Attributes.class class] []
+  td
+    [ class "state" ]
+    [ let clazz = "fa " ++ State.toClass instruction.input.state
+      in span [class clazz] []
     ]
 
-viewInputSymbol : Model -> Html.Html
+viewInputSymbol : Model -> Html
 viewInputSymbol instruction =
-  Html.td
-    [ Html.Attributes.class
+  td
+    [ class
         ("symbol-" ++ Symbol.toColor instruction.input.symbol)
     ]
     []
 
-spacer : Html.Html
+spacer : Html
 spacer =
-  Html.td
-    [ Html.Attributes.class "spacer" ]
+  td
+    [ class "spacer" ]
     []
 
-viewOutputState : List State -> Signal.Address Action -> Model -> Html.Html
+viewOutputState : List State -> Signal.Address Action -> Model -> Html
 viewOutputState possibleStates address instruction =
-  Html.td
-    [ Html.Events.onClick address (ChangeStateOut possibleStates)
-    , Html.Attributes.class "state " ]
-    [ let class = "fa " ++ State.toClass instruction.output.state
-      in Html.span [Html.Attributes.class class] []
+  td
+    [ onClick address (ChangeStateOut possibleStates)
+    , class "state " ]
+    [ let clazz = "fa " ++ State.toClass instruction.output.state
+      in span [class clazz] []
     ]
 
-viewOutputSymbol : List Symbol -> Signal.Address Action -> Model -> Html.Html
+viewOutputSymbol : List Symbol -> Signal.Address Action -> Model -> Html
 viewOutputSymbol possibleSymbols address instruction =
-  Html.td
-    [ Html.Events.onClick address (ChangeSymbolOut possibleSymbols)
-    , Html.Attributes.class
+  td
+    [ onClick address (ChangeSymbolOut possibleSymbols)
+    , class
         ("output symbol-" ++ Symbol.toColor instruction.output.symbol)
     ]
     []
 
 
-viewMove : Signal.Address Action -> Model -> Html.Html
+viewMove : Signal.Address Action -> Model -> Html
 viewMove address instruction =
-  Html.td
-    [ Html.Events.onClick address ChangeMove
-    , Html.Attributes.class "move"
+  td
+    [ onClick address ChangeMove
+    , class "move"
     ]
-    [ let class = case instruction.output.move of
+    [ let clazz = case instruction.output.move of
         Move.Left -> "fa fa-arrow-circle-left"
         Move.Right -> "fa fa-arrow-circle-right"
-      in Html.span [Html.Attributes.class class] []
+      in span [class clazz] []
     ]
 
 

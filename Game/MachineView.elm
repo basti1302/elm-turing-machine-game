@@ -106,7 +106,7 @@ viewWonLost address hasWon model =
       [ onClick address SwitchToProgram
       , class "fa fa-wrench top-button" ]
       []
-    btnLevelSelect = Html.button
+    btnLevelSelect = button
       [ onClick address SwitchToLevelSelect
       , class "fa fa-sign-out top-button" ]
       []
@@ -137,7 +137,7 @@ viewInternal address wonLostBlocker (machine, renderPhase)  =
       [ onClick address SwitchToProgram
       , class "fa fa-wrench top-button" ]
       []
-    btnLevelSelect = Html.button
+    btnLevelSelect = button
       [ onClick address SwitchToLevelSelect
       , class "fa fa-sign-out top-button" ]
       []
@@ -146,12 +146,12 @@ viewInternal address wonLostBlocker (machine, renderPhase)  =
       Just blocker -> blocker :: programContent
       Nothing -> programContent
   in
-    Html.div
+    div
       [ class "machine-view" ]
-      [ Html.div
+      [ div
         [ class "top-button-bar" ]
         [ btnProgram, btnLevelSelect ],
-        Html.div
+        div
         [ class "container" ]
         content
       ]

@@ -9,9 +9,9 @@ module Game.Puzzle
   )
   where
 
-import Html
-import Html.Attributes
-import Html.Events
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 import Game.Symbol as Symbol exposing (Symbol)
 import Game.State as State exposing (State)
@@ -82,34 +82,34 @@ isSolved tape puzzle =
   Tape.trim tape == Tape.trim puzzle.result
 
 
-viewShort : Signal.Address Action -> Model -> Html.Html
+viewShort : Signal.Address Action -> Model -> Html
 viewShort address puzzle =
-  Html.div []
-  [ Html.span
-    [ Html.Attributes.class "title"]
+  div []
+  [ span
+    [ class "title"]
     [ buttonPlay address puzzle
-    , Html.text puzzle.title
+    , text puzzle.title
     ]
   ]
 
 
-viewDetails : Signal.Address Action -> Model -> Html.Html
+viewDetails : Signal.Address Action -> Model -> Html
 viewDetails address puzzle =
-  Html.div []
-  [ Html.span
-    [ Html.Attributes.class "title"]
+  div []
+  [ span
+    [ class "title"]
     [ buttonPlay address puzzle
-    , Html.text puzzle.title
+    , text puzzle.title
     ]
-  , Html.p
-    [ Html.Attributes.class "description" ]
-    [ Html.text puzzle.description ]
+  , p
+    [ class "description" ]
+    [ text puzzle.description ]
   ]
 
 
-buttonPlay : Signal.Address Action -> Model -> Html.Html
+buttonPlay : Signal.Address Action -> Model -> Html
 buttonPlay address puzzle =
-  Html.button
-    [ Html.Events.onClick address <| Select puzzle
-    , Html.Attributes.class "fa fa-play btn-select-level" ]
+  button
+    [ onClick address <| Select puzzle
+    , class "fa fa-play btn-select-level" ]
     []

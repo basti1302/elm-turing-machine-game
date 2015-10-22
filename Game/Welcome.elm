@@ -3,22 +3,22 @@ module Game.Welcome
   , view
   ) where
 
-import Html
-import Html.Attributes
-import Html.Events
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 
 type Action = Play
 
 
-view : Signal.Address Action -> Html.Html
+view : Signal.Address Action -> Html
 view address =
-  Html.div [ Html.Attributes.class "welcome" ]
-  [   Html.h1 []
-      [ Html.text "Alan's Machines" ]
-    , Html.button
-      [ Html.Events.onClick address <| Play
-      , Html.Attributes.class "main-menu-button"
+  div [ class "welcome" ]
+  [   h1 []
+      [ text "Alan's Machines" ]
+    , button
+      [ onClick address <| Play
+      , class "main-menu-button"
       ]
-      [ Html.text "Select Level" ]
+      [ text "Select Level" ]
   ]

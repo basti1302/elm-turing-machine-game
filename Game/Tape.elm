@@ -13,8 +13,8 @@ module Game.Tape
 
 import Array
 import Debug
-import Html
-import Html.Attributes
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
 import Game.Cell as Cell
 import Game.RenderPhase as RenderPhase exposing (RenderPhase)
@@ -105,15 +105,15 @@ read position model =
 {-|
 Renders the tape to HTML.
 -}
-view : RenderPhase -> Int -> Model -> Html.Html
+view : RenderPhase -> Int -> Model -> Html
 view renderPhase head tape =
   let
     -- how many cells to render to each side of the head. show = n means we
     -- render 2n+1 cells.
     show = 4
-    missingLeft = max (show - head) 0 -- cells we need to append at the left edge
+    missingLeft = Basics.max (show - head) 0 -- cells we need to append at the left edge
     deltaRight = Array.length tape - head - 1 -- # of cells between head and right edge
-    missingRight = max (show - deltaRight) 0 -- cells we need to append at the right edge
+    missingRight = Basics.max (show - deltaRight) 0 -- cells we need to append at the right edge
 
     -- append cells so that we always show a certain number of cells left and right of head
     extendedTape =
@@ -142,8 +142,8 @@ view renderPhase head tape =
     leftAndHeadRendered = Array.push (Cell.view renderPhase cellAtHead) leftRendered
     rightRendered = Array.map (Cell.view renderPhase) rightSide
   in
-    Html.div
-      [Html.Attributes.class "tape"]
+    div
+      [class "tape"]
         <| Array.toList
         <| Array.append leftAndHeadRendered rightRendered
 
@@ -151,7 +151,7 @@ view renderPhase head tape =
 {-|
 Renders the tape to HTML.
 -}
-viewMiniatureWithHead : Int -> Model -> Html.Html
+viewMiniatureWithHead : Int -> Model -> Html
 viewMiniatureWithHead head tape =
   let
     -- how many cells to render.
@@ -169,7 +169,7 @@ viewMiniatureWithHead head tape =
     leftAndHeadRendered = Array.push (Cell.viewMiniature True cellAtHead) leftRendered
     rightRendered = Array.map (Cell.viewMiniature False) rightSide
   in
-    Html.span []
+    span []
       <| Array.toList
       <| Array.append leftAndHeadRendered rightRendered
 
@@ -177,7 +177,7 @@ viewMiniatureWithHead head tape =
 {-|
 Renders the tape to HTML.
 -}
-viewMiniature : Model -> Html.Html
+viewMiniature : Model -> Html
 viewMiniature tape =
   let
     -- how many cells to render.
@@ -187,4 +187,4 @@ viewMiniature tape =
     -- apply render function
     rendered = Array.map (Cell.viewMiniature False) viewport
   in
-    Html.span [] <| Array.toList rendered
+    span [] <| Array.toList rendered

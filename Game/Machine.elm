@@ -7,8 +7,8 @@ module Game.Machine
   , view) where
 
 import Debug
-import Html
-import Html.Attributes
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
 import Game.Cell as Cell
 import Game.Instruction as Instruction
@@ -157,18 +157,18 @@ fixHeadPosition position =
 {-|
 Renders the machine to HTML.
 -}
-view : RenderPhase -> Model -> List Html.Html
+view : RenderPhase -> Model -> List Html
 view renderPhase machine =
   let state = case renderPhase of
     RenderPhase.StartTransition (nextState, _, _) -> nextState
     otherwise -> machine.state
   in
-    [ Html.div [ Html.Attributes.class "cpu" ] [
-        Html.span
-        [ Html.Attributes.class ("fa " ++ State.toClass state) ] []
+    [ div [ class "cpu" ] [
+        span
+        [ class ("fa " ++ State.toClass state) ] []
       ]
-    , Html.div [ Html.Attributes.class "head" ] []
-    , Html.div
-        [ Html.Attributes.class "tape-viewport" ]
+    , div [ class "head" ] []
+    , div
+        [ class "tape-viewport" ]
         [ Tape.view renderPhase machine.head machine.tape ]
     ]

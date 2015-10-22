@@ -8,8 +8,8 @@ module Game.Cell
   , viewMiniature)
   where
 
-import Html
-import Html.Attributes
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
 import Game.Move as Move exposing (Move)
 import Game.RenderPhase as RenderPhase exposing (RenderPhase)
@@ -42,7 +42,7 @@ update action model =
 {-|
 Convert the cell into an HTML span.
 -}
-view : RenderPhase -> Model -> Html.Html
+view : RenderPhase -> Model -> Html
 view renderPhase model =
   let
     (transform, transition) = case renderPhase of
@@ -51,20 +51,20 @@ view renderPhase model =
         Move.Right -> ("translateX(-60px)", "transform 350ms ease")
       otherwise -> ("", "")
   in
-    Html.span
-    [ Html.Attributes.class ("cell cell-" ++ Symbol.toColor model.symbol)
-    , Html.Attributes.style
+    span
+    [ class ("cell cell-" ++ Symbol.toColor model.symbol)
+    , style
       [ ("transform", transform)
       , ("transition", transition)
       ]
     ]
-    [ Html.text "" ]
+    [ text "" ]
 
 
 {-|
 Convert the cell into a very small HTML span for the miniature tape view.
 -}
-viewMiniature : Bool -> Model -> Html.Html
+viewMiniature : Bool -> Model -> Html
 viewMiniature head model =
   let
     classes = "mini-cell cell-" ++ (Symbol.toColor model.symbol)
@@ -75,6 +75,6 @@ viewMiniature head model =
         then "mini-head " ++ classes
       else classes
   in
-    Html.span
-    [ Html.Attributes.class classes' ]
-    [ Html.text "" ]
+    span
+    [ class classes' ]
+    [ text "" ]

@@ -1,7 +1,7 @@
 module Main (main) where
 
-import Html
-import Html.Attributes
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Signal exposing (Signal, (<~), (~))
 import Time exposing (every, millisecond)
 
@@ -155,7 +155,7 @@ updateProgram programAction (game, context) =
 {-|
 Renders the game view.
 -}
-view : Signal.Address Action -> (Model, Context) -> Html.Html
+view : Signal.Address Action -> (Model, Context) -> Html
 view address (game, context) =
   let content =
     case context.view of
@@ -177,8 +177,8 @@ view address (game, context) =
               (Signal.forwardTo address MachineAction)
               game.machineView ]
   in
-    Html.div
-      [ Html.Attributes.class "game" ]
+    div
+      [ class "game" ]
       content
 
 
@@ -208,7 +208,7 @@ mainSignal = Signal.merge mainMailbox.signal tickSignal
 {-|
 The HTML output signal.
 -}
-main : Signal Html.Html
+main : Signal Html
 main =
   let
     model =

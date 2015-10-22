@@ -159,7 +159,7 @@ viewRowMoves address program =
 
 topButton : Signal.Address Action -> Action -> String -> Html
 topButton address action icon =
-  Html.button
+  button
     [ onClick address action
     , class <| "fa fa-" ++ icon ++ " top-button" ]
     []

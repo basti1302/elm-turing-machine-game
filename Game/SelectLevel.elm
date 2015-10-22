@@ -6,9 +6,9 @@ module Game.SelectLevel
   , view
   ) where
 
-import Html
-import Html.Attributes
-import Html.Events
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 import Game.Puzzle as Puzzle
 import Game.Puzzles as Puzzles
@@ -61,17 +61,17 @@ tagSelect action =
     Puzzle.Select puzzle -> Select puzzle
 
 
-viewPuzzle : Signal.Address Action -> ModelItem -> Html.Html
+viewPuzzle : Signal.Address Action -> ModelItem -> Html
 viewPuzzle address item =
   let
     puzzle = item.puzzle
     clickHandler =
       if item.expanded
-        then [ Html.Events.onClick address <| CollapseAll ]
-        else [ Html.Events.onClick address <| Expand item ]
+        then [ onClick address <| CollapseAll ]
+        else [ onClick address <| Expand item ]
   in
-    Html.div []
-    [ Html.span
+    div []
+    [ span
       clickHandler
       [ if item.expanded
         then Puzzle.viewDetails (Signal.forwardTo address tagSelect) puzzle
@@ -79,12 +79,12 @@ viewPuzzle address item =
     ]
 
 
-view : Signal.Address Action -> Model -> Html.Html
+view : Signal.Address Action -> Model -> Html
 view address model =
   let
     levels =
       List.map (viewPuzzle address) model
   in
-    Html.div
-      [ Html.Attributes.class "levelSelection" ]
-      [ Html.div [] levels ]
+    div
+      [ class "levelSelection" ]
+      [ div [] levels ]
