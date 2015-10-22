@@ -101,6 +101,8 @@ viewWithInput : Signal.Address Action ->
 viewWithInput address renderFunction instruction =
   renderFunction (convertSignal address instruction) instruction
 
+
+viewRowInputSymbols : List Instruction.Model -> Html
 viewRowInputSymbols program =
   let
     tdsInputSymbols = List.map Instruction.viewInputSymbol program
@@ -110,12 +112,21 @@ viewRowInputSymbols program =
   in
     tr [] tdsInputSymbolsWithHeader
 
+
+viewRowInputStates : List Instruction.Model -> Html
 viewRowInputStates program =
   tr [] <| List.map Instruction.viewInputState program
 
+
+viewRowSpacers : List Instruction.Model -> Html
 viewRowSpacers program =
   tr [] <| List.repeat (List.length program) Instruction.spacer
 
+
+viewRowOutputSymbols : Signal.Address Action
+                       -> List Instruction.Model
+                       -> Puzzle.Model
+                       -> Html
 viewRowOutputSymbols address program puzzle =
   let
     renderOutputSymbol = Instruction.viewOutputSymbol puzzle.tapeAlphabet
@@ -127,6 +138,11 @@ viewRowOutputSymbols address program puzzle =
   in
    tr [] tdsOutputSymbolsWithHeader
 
+
+viewRowOutputStates : Signal.Address Action
+                      -> List Instruction.Model
+                      -> Puzzle.Model
+                      -> Html
 viewRowOutputStates address program puzzle =
   let
     renderOutputState = Instruction.viewOutputState puzzle.states
@@ -134,11 +150,14 @@ viewRowOutputStates address program puzzle =
     tr [] <|
       List.map (viewWithInput address renderOutputState) program
 
+
+viewRowMoves : Signal.Address Action -> List Instruction.Model -> Html
 viewRowMoves address program =
   tr [] <|
     List.map (viewWithInput address Instruction.viewMove) program
 
 
+topButton : Signal.Address Action -> Action -> String -> Html
 topButton address action icon =
   Html.button
     [ onClick address action
