@@ -13,6 +13,7 @@ import Html.Events exposing (..)
 import List.Extra
 
 import Game.Instruction as Instruction
+import Game.Move as Move
 import Game.Puzzle as Puzzle
 import Game.State as State exposing (State)
 import Game.Symbol as Symbol exposing (Symbol)
@@ -70,9 +71,20 @@ execute (state, symbol) { program } =
         else Nothing
   in
     case instructionResult of
-      Just instr -> Result.Ok instr
+      Just instr -> Result.Ok <| handleFinalStep instr
       Nothing -> Result.Err <| "No instruction for " ++
         toString (state, symbol)
+
+
+handleFinalStep : Instruction.Model -> Instruction.Model
+handleFinalStep instruction =
+  if instruction.output.state == State.HALT
+  then
+    let
+      output = instruction.output
+      output' = { output | move <- Move.None }
+    in { instruction | output <- output'}
+  else instruction
 
 
 update : Action -> Model -> Model

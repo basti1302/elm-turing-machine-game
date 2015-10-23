@@ -149,6 +149,7 @@ calcHeadPosition move position =
   case move of
     Move.Left -> position - 1
     Move.Right -> position + 1
+    Move.None -> position
 
 
 {-|

@@ -49,6 +49,7 @@ view renderPhase model =
       RenderPhase.StartTransition (_, _, move) -> case move of
         Move.Left -> ("translateX(60px)", "transform 350ms ease")
         Move.Right -> ("translateX(-60px)", "transform 350ms ease")
+        Move.None -> ("none", "none")
       otherwise -> ("", "")
   in
     span

@@ -103,7 +103,7 @@ viewWonLost address solvedNotSolved model =
   let
     wonLostText =
       case solvedNotSolved of
-        SolvedNotSolved.Solved -> "☺☻ \\o/ (ʘ‿ʘ) \\o/ ☻☺"
+        SolvedNotSolved.Solved -> "☺ \\o/ ☻ (ʘ‿ʘ) ☻ \\o/ ☺"
         otherwise -> ":-( ☹☹☹☹ ಠ_ಠ ☹☹☹☹ )-:"
     btnTryAgain = button
       [ onClick address SwitchToProgram
