@@ -5,12 +5,14 @@ import Html.Attributes exposing (..)
 import Signal exposing (Signal, (<~), (~))
 import Time exposing (every, millisecond)
 
+import Game.Machine as Machine
 import Game.MachineView as MachineView
 import Game.Program as Program
 import Game.Puzzle as Puzzle
 import Game.Puzzles as Puzzles
 import Game.Screen as Screen exposing (Screen)
 import Game.SelectLevel as SelectLevel
+import Game.SolvedNotSolved as SolvedNotSolved exposing (SolvedNotSolved)
 import Game.Welcome as Welcome
 
 
@@ -25,8 +27,7 @@ type alias Model =
 type alias Context =
   { view : Screen
   , puzzles : Puzzles.Model
-  , hasWon : Bool
-  , hasLost : Bool
+  , solvedNotSolved : SolvedNotSolved
   }
 
 
@@ -49,8 +50,7 @@ init =
    },
    { view = Screen.Welcome
    , puzzles = Puzzles.init
-   , hasWon = False
-   , hasLost = False
+   , solvedNotSolved = SolvedNotSolved.InProgress
    })
 
 
@@ -119,16 +119,21 @@ updateMachine machineAction (game, context) =
     otherwise ->
       let
         (machine', renderPhase') = MachineView.update machineAction game.machineView
-        hasWon' =
-          machine'.stopped &&
-          Puzzle.isSolved machine'.tape game.puzzle
-        hasLost' =
-          machine'.stopped &&
-          not (Puzzle.isSolved machine'.tape game.puzzle)
+        solvedNotSolved' = updateSolvedState machine' game
       in
         ({ game | machineView <- (machine', renderPhase') },
-         { context | hasWon <- hasWon'
-                   , hasLost <- hasLost' })
+         { context | solvedNotSolved <- solvedNotSolved' })
+
+
+updateSolvedState : Machine.Model -> Model -> SolvedNotSolved
+updateSolvedState machine game =
+  if machine.stopped
+    then
+      if Puzzle.isSolved machine.tape game.puzzle &&
+               Machine.isInAcceptingState machine
+        then SolvedNotSolved.Solved
+        else SolvedNotSolved.NotSolved
+    else SolvedNotSolved.InProgress
 
 
 updateProgram : Program.Action -> (Model, Context) -> (Model, Context)
@@ -141,8 +146,7 @@ updateProgram programAction (game, context) =
        }
       , { context | view <- Screen.Machine
       -- also reset won/lost marker, otherwise old won/lost message is shown
-                  , hasWon <- False
-                  , hasLost <- False })
+                  , solvedNotSolved <- SolvedNotSolved.InProgress })
     Program.SwitchToLevelSelect ->
       (game, { context | view <- Screen.SelectLevel })
     otherwise ->
@@ -166,11 +170,11 @@ view address (game, context) =
       Screen.Program ->
         [ Program.view (Signal.forwardTo address ProgramAction) game.program ]
       Screen.Machine ->
-        if context.hasWon || context.hasLost
+        if context.solvedNotSolved /= SolvedNotSolved.InProgress
         then
           [ MachineView.viewWonLost
               (Signal.forwardTo address MachineAction)
-              context.hasWon
+              context.solvedNotSolved
               game.machineView ]
         else
           [ MachineView.view

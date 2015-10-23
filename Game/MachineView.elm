@@ -20,6 +20,7 @@ import Game.Program as Program
 import Game.Puzzle as Puzzle
 import Game.Puzzles as Puzzles
 import Game.RenderPhase as RenderPhase exposing (RenderPhase)
+import Game.SolvedNotSolved as SolvedNotSolved exposing (SolvedNotSolved)
 import Game.Tape as Tape
 
 
@@ -97,11 +98,13 @@ update action (machine, renderPhase)  =
 view : Signal.Address Action -> Model -> Html
 view address model = viewInternal address Nothing model
 
-viewWonLost : Signal.Address Action -> Bool -> Model -> Html
-viewWonLost address hasWon model =
+viewWonLost : Signal.Address Action -> SolvedNotSolved -> Model -> Html
+viewWonLost address solvedNotSolved model =
   let
-    wonLostText = if hasWon then "☺☻ \\o/ (ʘ‿ʘ) \\o/ ☻☺"
-                            else ":-( ☹☹☹☹ ಠ_ಠ ☹☹☹☹ )-:"
+    wonLostText =
+      case solvedNotSolved of
+        SolvedNotSolved.Solved -> "☺☻ \\o/ (ʘ‿ʘ) \\o/ ☻☺"
+        otherwise -> ":-( ☹☹☹☹ ಠ_ಠ ☹☹☹☹ )-:"
     btnTryAgain = button
       [ onClick address SwitchToProgram
       , class "fa fa-wrench top-button" ]
@@ -114,8 +117,9 @@ viewWonLost address hasWon model =
       [ onClick address GoToNextLevel
       , class "fa fa-forward" ]
       []
-    buttons = if hasWon then span [] [ btnNextLevel, btnLevelSelect]
-                        else span [] [ btnTryAgain, btnLevelSelect ]
+    buttons = case solvedNotSolved of
+      SolvedNotSolved.Solved -> span [] [ btnNextLevel, btnLevelSelect]
+      otherwise              -> span [] [ btnTryAgain, btnLevelSelect ]
     wonLostMessage =
     (Just <|
       div
@@ -155,5 +159,3 @@ viewInternal address wonLostBlocker (machine, renderPhase)  =
         [ class "container" ]
         content
       ]
-
-

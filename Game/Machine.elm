@@ -2,6 +2,7 @@ module Game.Machine
   ( Model
   , init
   , predictNextStep
+  , isInAcceptingState
   , Action(ExecuteStep)
   , update
   , view) where
@@ -27,6 +28,7 @@ initialState = State.A
 acceptingStates : List State
 acceptingStates = [ State.HALT ]
 
+
 type alias Model  =
   { state : State
   , tape : Tape.Model
@@ -35,6 +37,9 @@ type alias Model  =
   , stepCount : Int
   , stopped : Bool
   }
+
+
+type Action = ExecuteStep
 
 
 init : Tape.Model -> Int -> Program.Model -> Model
@@ -69,7 +74,9 @@ read machine =
     Nothing -> Symbol.blank
 
 
-type Action = ExecuteStep
+isInAcceptingState : Model -> Bool
+isInAcceptingState machine =
+  List.member machine.state acceptingStates
 
 
 {-|
