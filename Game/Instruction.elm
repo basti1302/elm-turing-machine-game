@@ -143,9 +143,12 @@ viewMove address instruction =
     [ onClick address ChangeMove
     , class "move"
     ]
-    [ let clazz = case instruction.output.move of
-        Move.Left -> "fa fa-arrow-circle-left"
-        Move.Right -> "fa fa-arrow-circle-right"
+    [
+      let clazz =
+        if instruction.output.state == State.HALT then "fa"
+        else case instruction.output.move of
+          Move.Left -> "fa fa-arrow-circle-left"
+          Move.Right -> "fa fa-arrow-circle-right"
       in span [class clazz] []
     ]
 

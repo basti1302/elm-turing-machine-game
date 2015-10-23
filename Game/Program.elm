@@ -107,7 +107,10 @@ viewRowInputSymbols program =
   let
     tdsInputSymbols = List.map Instruction.viewInputSymbol program
     tdsInputSymbolsWithHeader =
-      (td [ rowspan 2 ] [ text "In" ])
+      (td [ rowspan 2
+          , class "fa fa-angle-right"
+          , style [("display", "table-cell")]
+          ] [])
       :: tdsInputSymbols
   in
     tr [] tdsInputSymbolsWithHeader
@@ -133,7 +136,10 @@ viewRowOutputSymbols address program puzzle =
     tdsOutputSymbols =
       List.map (viewWithInput address renderOutputSymbol) program
     tdsOutputSymbolsWithHeader =
-      (td [ rowspan 3 ] [ text "Out" ])
+      (td [ rowspan 3
+          , class "fa fa-angle-left"
+          , style [("display", "table-cell")]
+          ] [])
       :: tdsOutputSymbols
   in
    tr [] tdsOutputSymbolsWithHeader
