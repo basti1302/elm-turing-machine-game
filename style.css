@@ -21,6 +21,7 @@ body {
   -o-font-smoothing: antialiased;
   font-smoothing: antialiased;
 
+  /* overall text glow effect */
   text-shadow:
     0 0  7px  rgba(255, 255, 255, 0.8),
     0 0 12px  rgba(255, 255, 255, 0.4);
@@ -205,6 +206,17 @@ table.program td.symbol-blue.output:hover {
   box-shadow:
     inset 0px 0px 8px 7px rgba(0, 0, 0, 0.4),
     0px 0px 10px 4px rgba(0, 0, 200, 0.5);
+}
+
+table.program td.state.output:hover {
+  text-shadow:
+    0 0  9px  rgba(255, 255, 255, 1),
+    0 0 14px  rgba(255, 255, 255, 0.7);
+}
+table.program td.move:hover {
+  text-shadow:
+    0 0  9px  rgba(255, 255, 255, 1),
+    0 0 14px  rgba(255, 255, 255, 0.7);
 }
 
 table.program td.spacer {

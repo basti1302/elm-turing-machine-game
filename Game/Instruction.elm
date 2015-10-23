@@ -122,7 +122,7 @@ viewOutputState : List State -> Signal.Address Action -> Model -> Html
 viewOutputState possibleStates address instruction =
   td
     [ onClick address (ChangeStateOut possibleStates)
-    , class "state " ]
+    , class "output state " ]
     [ let clazz = "fa " ++ State.toClass instruction.output.state
       in span [class clazz] []
     ]
