@@ -162,16 +162,21 @@ viewMiniatureWithHead head tape =
       case cellAtHeadMaybe of
         Just cell -> cell
         Nothing -> Debug.crash "No cell at head"
-    rightSide = Array.slice (head + 1) numberOfCells tape
+    rightSide = Array.append
+      (Array.slice (head + 1) numberOfCells tape)
+      (Array.repeat (numberOfCells - Array.length tape) Cell.blank)
 
     -- apply render function
     leftRendered = Array.map (Cell.viewMiniature False) leftSide
-    leftAndHeadRendered = Array.push (Cell.viewMiniature True cellAtHead) leftRendered
+      |> Array.toList
+    leftAndHeadRendered = leftRendered ++
+      [(Cell.viewMiniature True cellAtHead)]
     rightRendered = Array.map (Cell.viewMiniature False) rightSide
+      |> Array.toList
+    rightRendered' = rightRendered ++ [ span [ style [("clear", "both")]][] ]
   in
     span []
-      <| Array.toList
-      <| Array.append leftAndHeadRendered rightRendered
+      <| leftAndHeadRendered ++ rightRendered'
 
 
 {-|
@@ -182,7 +187,9 @@ viewMiniature tape =
   let
     -- how many cells to render.
     numberOfCells = 9
-    viewport = Array.slice 0 numberOfCells tape
+    viewport = Array.append
+      (Array.slice 0 numberOfCells tape)
+      (Array.repeat (numberOfCells - Array.length tape) Cell.blank)
 
     -- apply render function
     rendered = Array.map (Cell.viewMiniature False) viewport

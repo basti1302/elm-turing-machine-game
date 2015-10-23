@@ -200,14 +200,19 @@ view address { program, puzzle } =
     tableContent = [ tbody [] rows ]
     programTable = table [ class "program" ] tableContent
     puzzleInputRow =
-      span [ class "mini-tape" ]
+      div [ class "mini-tape" ]
       [ span [ class "mini-tape-label fa fa-angle-double-right" ] []
       , Tape.viewMiniatureWithHead puzzle.initialHeadPosition puzzle.input
       ]
     puzzleResultRow =
-      span [ class "mini-tape" ]
+      div [ class "mini-tape" ]
       [ span [ class "mini-tape-label fa fa-angle-double-left" ] []
       , Tape.viewMiniature puzzle.result
+      ]
+    middlePuzzleRow =
+      div [ class "mini-tape-middle-row" ]
+      [ span [ class "fa fa-chevron-down" ] []
+      , span [ class "fa fa-chevron-down" ] []
       ]
   in
     div
@@ -219,10 +224,13 @@ view address { program, puzzle } =
         [ class "container" ]
         [ programTable
         , div
-          [ class "mini-tape-container" ]
-          [ puzzleInputRow
-          , br [] []
-          , puzzleResultRow
+          [class "mini-tape-container-outer"]
+          [ div
+            [ class "mini-tape-container-inner" ]
+            [ puzzleInputRow
+            , middlePuzzleRow
+            , puzzleResultRow
+            ]
           ]
         ]
       ]
